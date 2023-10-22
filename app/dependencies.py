@@ -2,11 +2,11 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from app.uow import AbstractUnitOfWork
-from app.user.schemas.user import UserResponse
-from app.user.services.auth import AuthService
-from app.user.services.user import UserService
-from app.user.uow import UnitOfWork
+from core.services.uow import AbstractUnitOfWork
+from app.user.schemas import UserResponse
+from core.services.auth import AuthService
+from app.uow import UnitOfWork
+from app.user.service import UserService
 from core.config import AppConfig
 from core.exceptions.classes import APIException
 from core.schemas.base import APIResponse

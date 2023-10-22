@@ -1,16 +1,18 @@
 from fastapi import APIRouter, Depends
 
-from app.user.dependencies import auth_service, UnitOfWorkDep, get_current_user
-from app.user.schemas import mapper
-from app.user.schemas.user import UserResponse
-from app.user.services.auth import AuthService
-from app.user.services.user import UserService
-from core.schemas.base import APIResponse
+from app.user import mapper
+from app.dependencies import auth_service, UnitOfWorkDep, get_current_user
+from app.user.schemas import UserResponse
+from app.user.service import UserService
+from core.schemas.base import APIDetailedResponse
+from core.services.auth import AuthService
 
 router = APIRouter()
 
+APIResponse = APIDetailedResponse(UserResponse)
 
-@router.post("/auth")
+
+@router.post("/auth", response_model=APIResponse)
 async def user_auth(
     uow: UnitOfWorkDep, auth: AuthService = Depends(auth_service)
 ) -> APIResponse:
@@ -30,15 +32,11 @@ async def user_auth(
         )
         user = await UserService.get_user(uow, auth.init_data.user.id)
 
-    return APIResponse(
-        success=True, message="User authenticated", data={"user": user}
-    )
+    return APIResponse(success=True, message="User authenticated", data=user)
 
 
-@router.get("/me")
+@router.get("/me", response_model=APIResponse)
 async def user_me(
     current_user: UserResponse = Depends(get_current_user),
 ) -> APIResponse:
-    return APIResponse(
-        success=True, message="Your data", data={"user": current_user}
-    )
+    return APIResponse(success=True, message="Your data", data=current_user)

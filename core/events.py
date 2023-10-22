@@ -3,7 +3,7 @@ import asyncio
 from aiogram import Dispatcher, Bot
 from fastapi import FastAPI
 
-from core.database.db import engine, Base
+from core.fixture import init_models, create_fixtures
 
 
 def add_events(app: FastAPI, **kwargs):
@@ -15,9 +15,8 @@ def add_events(app: FastAPI, **kwargs):
         if bot and bot_dispatcher:
             asyncio.create_task(bot_dispatcher.start_polling(bot))
         # create db tables
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-            await conn.run_sync(Base.metadata.create_all)
+        await init_models()
+        await create_fixtures()
 
     @app.on_event("shutdown")
     async def shutdown():

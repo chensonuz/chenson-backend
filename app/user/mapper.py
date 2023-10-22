@@ -1,5 +1,4 @@
-from app.user.schemas.telegram import InitData
-from app.user.schemas.user import UserCreate
+from app.user.schemas import InitData, UserCreate
 
 
 def auth_data_to_create_schema(request: InitData) -> UserCreate:

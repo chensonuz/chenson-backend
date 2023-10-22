@@ -1,6 +1,6 @@
-from app.uow import AbstractUnitOfWork
-from app.user.database.models import User
-from app.user.schemas.user import UserResponse, UserCreate
+from app.user.models import User
+from app.user.schemas import UserResponse, UserCreate
+from core.services.uow import AbstractUnitOfWork
 
 
 class UserService:
@@ -14,7 +14,6 @@ class UserService:
     - get users
     - get user
     - update user (as per database schema)
-    - update user profile (only for name and schedule)
     """
 
     @staticmethod

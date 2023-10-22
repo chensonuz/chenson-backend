@@ -68,7 +68,7 @@ def add_exception_handlers(app: FastAPI):
     ):
         return JSONResponse(
             status_code=status_code,
-            content=jsonable_encoder(exc.name),
+            content=jsonable_encoder(exc.response),
         )
 
     @app.exception_handler(ex.ValuePydanticError)
@@ -79,7 +79,7 @@ def add_exception_handlers(app: FastAPI):
     ):
         return JSONResponse(
             status_code=status_code,
-            content=jsonable_encoder(exc.name),
+            content=jsonable_encoder(exc.response),
         )
 
     @app.exception_handler(ex.ForbiddenError)

@@ -8,7 +8,7 @@ from loguru import logger
 from pydantic import ValidationError
 from starlette.requests import Request
 
-from app.user.schemas.telegram import InitData, TelegramUser
+from app.user.schemas import InitData, TelegramUser
 from core.exceptions.classes import UnauthorizedError
 
 

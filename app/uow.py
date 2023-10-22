@@ -1,27 +1,31 @@
-from abc import ABC, abstractmethod
+from app.category.repository import CategoryRepository
+from app.product.repository import ProductRepository
+from app.user.repository import UserRepository
+from core.database.db import async_session
+from core.services.uow import AbstractUnitOfWork
 
-from app.user.database.repository import UserRepository
 
+class UnitOfWork(AbstractUnitOfWork):
+    """
+    Unit of work pattern implementation
+    """
 
-class AbstractUnitOfWork(ABC):
-    user: UserRepository
-
-    @abstractmethod
     def __init__(self):
-        ...
+        self.session_factory = async_session
 
-    @abstractmethod
     async def __aenter__(self):
-        ...
+        self.session = self.session_factory()
 
-    @abstractmethod
+        self.user: UserRepository = UserRepository(self.session)
+        self.category: CategoryRepository = CategoryRepository(self.session)
+        self.product: ProductRepository = ProductRepository(self.session)
+
     async def __aexit__(self, *args):
-        ...
+        await self.rollback()
+        await self.session.close()
 
-    @abstractmethod
     async def commit(self):
-        ...
+        await self.session.commit()
 
-    @abstractmethod
     async def rollback(self):
-        ...
+        await self.session.rollback()

@@ -1,24 +1,20 @@
 from typing import Union
 
 from fastapi import HTTPException
-from pydantic import BaseModel
+
+from core.schemas.base import APIResponse
 
 
 class APIException(HTTPException):
     pass
 
 
-class ErrorMessage(BaseModel):
-    message: str = "Error Occurred"
-    codeError: str
-
-
 class BaseAppError(Exception):
-    def __init__(self, name: Union[ErrorMessage, str]):
-        self.name = (
-            ErrorMessage(message=name, codeError="undefined")
-            if isinstance(name, str)
-            else name
+    def __init__(self, message: Union[APIResponse, str]):
+        self.response = (
+            APIResponse(success=False, message=message, data=None)
+            if isinstance(message, str)
+            else message
         )
 
 

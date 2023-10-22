@@ -1,6 +1,6 @@
 from sqlalchemy import Column
 
-from app.user.database.models import User
+from app.user.models import User
 from core.repositories.base import SQLAlchemyRepository
 
 
