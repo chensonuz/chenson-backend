@@ -19,7 +19,7 @@ class ProductBaseCategoryIDSchema(BaseModel):
 
 
 class ProductResponse(
-    BaseORMSchema, ProductBaseIDSchema, ProductBaseCategoryIDSchema
+    BaseORMSchema, ProductBaseIDSchema, ProductBaseCategoryIDSchema, ProductBase
 ):
     pass
 
