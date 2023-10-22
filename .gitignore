@@ -121,6 +121,7 @@ celerybeat.pid
 *.sage.py
 
 sql
+.DS_Store
 
 # Environments
 .env
