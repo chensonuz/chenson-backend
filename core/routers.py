@@ -10,7 +10,7 @@ from core.logging.logger import init_logging
 def add_app_routers(app: FastAPI):
     init_logging()
 
-    @app.get("/health")
+    @app.get("/health", name="main:health")
     def healthcheck():
         return {"message": "OK"}
 

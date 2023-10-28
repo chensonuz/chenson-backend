@@ -5,11 +5,22 @@ services:
     ports:
       - 5455:5432
     volumes:
-      - ./sql:/var/lib/postgresql/data
+      - ./sql/dev:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: chenson
       POSTGRES_PASSWORD: chenson
       POSTGRES_DB: chenson
+
+  db-test:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: chenson
+      POSTGRES_PASSWORD: chenson
+      POSTGRES_DB: test_chenson
+    ports:
+      - 5456:5432
+    volumes:
+      - ./sql/test:/var/lib/postgresql/data
 
   redis:
     image: redis:alpine

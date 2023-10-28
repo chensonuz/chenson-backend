@@ -2,11 +2,21 @@ import os
 import secrets
 from typing import List
 
-from pydantic import EmailStr, PostgresDsn, field_validator
-from pydantic_settings import BaseSettings
+from pydantic import (
+    EmailStr,
+    PostgresDsn,
+    field_validator,
+)
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class _Config(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(os.path.dirname(BASE_DIR), ".env"), extra="forbid"
+    )
+
     DEBUG: bool = True
     SECRET_KEY: str = secrets.token_urlsafe(32)
     PREFIX: str = "/api/v1"
@@ -19,6 +29,7 @@ class _Config(BaseSettings):
     BOT_TOKEN: str
     BOT_TEST_ENVIRONMENT: bool
     TEST_BOT_TOKEN: str
+    RUN_BOT_POLLING: bool = True
 
     ACCESS_SECRET_KEY: str
     REFRESH_SECRET_KEY: str
@@ -27,6 +38,7 @@ class _Config(BaseSettings):
     JWT_ALGORITHM: str
 
     SQLALCHEMY_DATABASE_URI: PostgresDsn = None
+    SQLALCHEMY_TEST_DATABASE_URI: PostgresDsn = None
     SQLALCHEMY_DEBUG: bool = False
 
     FIRST_SUPERUSER: EmailStr
@@ -40,9 +52,6 @@ class _Config(BaseSettings):
     def set_default_origins(cls, v: List[str]) -> List[str]:
         defaults = ["http://localhost:3000", "http://127.0.0.1:3000"]
         return v + defaults
-
-    class Config:
-        env_file = os.path.abspath(".env")
 
 
 AppConfig = _Config()

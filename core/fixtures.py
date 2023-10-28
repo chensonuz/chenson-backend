@@ -5,7 +5,6 @@ from faker import Faker
 from app.category.schemas import CategoryCreate
 from app.dependencies import UnitOfWorkDep
 from app.product.schemas import ProductCreate
-from app.uow import UnitOfWork
 from core.database.db import engine, Base
 
 
@@ -15,8 +14,7 @@ async def init_models():
         await conn.run_sync(Base.metadata.create_all)
 
 
-async def create_fixtures():
-    uow: UnitOfWorkDep = UnitOfWork()
+async def create_fixtures(uow: UnitOfWorkDep):
     fake = Faker()
     async with uow:
         for _ in range(5):

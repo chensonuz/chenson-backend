@@ -11,7 +11,7 @@ class AbstractUnitOfWork(ABC):
     product: ProductRepository
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self, *args):
         ...
 
     @abstractmethod
