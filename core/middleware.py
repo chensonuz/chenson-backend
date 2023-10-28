@@ -43,10 +43,10 @@ def add_middleware(app: FastAPI):
 
         return response
 
-    # app.add_middleware(
-    #     CORSMiddleware,
-    #     allow_origins=AppConfig.ORIGINS,
-    #     allow_credentials=True,
-    #     allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
-    #     allow_headers=["*"],
-    # )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=AppConfig.ORIGINS,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+        allow_headers=["*"],
+    )
