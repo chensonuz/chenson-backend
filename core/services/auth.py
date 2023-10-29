@@ -73,7 +73,10 @@ class AuthService:
         if not init_data_base64:
             raise UnauthorizedError("Not authorized")
 
-        init_data_raw = base64.b64decode(init_data_base64).decode()
+        try:
+            init_data_raw = base64.b64decode(init_data_base64).decode()
+        except:
+            raise UnauthorizedError("Not authorized")
         init_data: InitData = self.decode_init_data(init_data_raw)
 
         # as per https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app

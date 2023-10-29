@@ -11,16 +11,13 @@ from sqlalchemy.orm import sessionmaker
 
 from app.dependencies import UnitOfWorkDep
 from app.uow import UnitOfWork
-from app.user.router import router as user_router
-from core.config._main import _Config
 from core.database.db import get_session, Base
 from core.exceptions.handlers import add_exception_handlers
 from core.fixtures import create_fixtures
 from core.routers import add_app_routers
+from tests.utils import generate_init_data, TestConfig
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-TestConfig = _Config()
 
 
 test_engine = create_async_engine(
@@ -49,7 +46,8 @@ def start_app() -> FastAPI:
     TestConfig.RUN_BOT_POLLING = False
 
     app = FastAPI()
-    app.include_router(user_router)
+    add_exception_handlers(app)
+    add_app_routers(app)
     return app
 
 
@@ -68,10 +66,10 @@ async def app(uow: UnitOfWorkDep) -> Generator[FastAPI, Any, None]:
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     _app = start_app()
-    add_exception_handlers(_app)
-    add_app_routers(_app)
     await create_fixtures(uow)
     async with LifespanManager(_app):
+        _app.dependency_overrides[uow] = uow
+        _app.dependency_overrides[get_session] = get_test_session
         yield _app
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -79,14 +77,23 @@ async def app(uow: UnitOfWorkDep) -> Generator[FastAPI, Any, None]:
 
 #
 @pytest.fixture
-async def client(
-    app: FastAPI, uow: UnitOfWorkDep
-) -> Generator[AsyncClient, Any, None]:
-    app.dependency_overrides[uow] = uow
-    app.dependency_overrides[get_session] = get_test_session
+async def client(app: FastAPI) -> Generator[AsyncClient, Any, None]:
     async with AsyncClient(
         app=app,
         base_url="http://testserver",
         headers={"Content-Type": "application/json"},
+    ) as client:
+        yield client
+
+
+@pytest.fixture
+async def authorized_client(app: FastAPI) -> Generator[AsyncClient, Any, None]:
+    async with AsyncClient(
+        app=app,
+        base_url="http://testserver",
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": generate_init_data()[1],
+        },
     ) as client:
         yield client
