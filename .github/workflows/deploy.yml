@@ -2,7 +2,8 @@ name: FastAPI App
 on:
   push:
     branches:
-      - v1
+      - main
+      - dev
 
 jobs:
   build:
