@@ -74,3 +74,12 @@ class UserCreate(BaseSchema):
 
 class UserResponse(BaseORMSchema, UserBaseIDSchema, UserBase):
     pass
+
+
+class UserSignInUpResponse(BaseModel):
+    created: bool
+    user: UserResponse
+
+
+class RequestSMSRequest(BaseModel):
+    phone_number: str

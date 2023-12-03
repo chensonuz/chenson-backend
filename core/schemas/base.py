@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Type, Union
+from typing import Type, Union, Any
 
 from pydantic import BaseModel, ConfigDict, create_model
 
@@ -18,7 +18,7 @@ class _APIDetailedResponse:
             "APIResponse",
             success=(bool, None),
             message=(str, None),
-            data=(data_type | None, None),
+            data=(data_type | Type[Any], None),
         )
 
 

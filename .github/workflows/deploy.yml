@@ -1,0 +1,35 @@
+name: FastAPI App
+on:
+  push:
+    branches:
+      - v1
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: deploy
+        name: Deploy to dokku
+        uses: idoberko2/dokku-deploy-github-action@v1.0.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          dokku-host: '68.183.73.239'
+          app-name: 'chenson-backend'
+          git-push-flags: '--force'
+          remote-branch: 'v1'
+
+      - uses: actions/checkout@v2
+      - name: Notify telegram
+        # You could use master version, but it's recommended to use [latest release version](https://github.com/marketplace/actions/action-notify) instead.
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
