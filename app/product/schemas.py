@@ -1,6 +1,8 @@
+from typing import List, Optional
+
 from pydantic import BaseModel
 
-from core.schemas.base import BaseORMSchema, BaseSchema
+from core.schemas.base import BaseORMSchema, BaseSchema, APIResponse
 
 
 class ProductBase(BaseModel):
@@ -29,3 +31,11 @@ class ProductCreate(BaseSchema, ProductBaseCategoryIDSchema):
     description: str
     price: int
     status: bool | None = False
+
+
+class APIProductListResponse(APIResponse):
+    data: List[ProductResponse] = None
+
+
+class APIProductResponse(APIResponse):
+    data: Optional[ProductResponse] = None
