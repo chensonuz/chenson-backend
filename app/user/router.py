@@ -7,18 +7,16 @@ from app.user.schemas import (
     UserResponse,
     UserSignInUpResponse,
     RequestSMSRequest,
+    APISignInUpResponse,
+    APIRequestSMSResponse,
+    APIUserResponse,
 )
 from app.user.service import UserService
 from core.exceptions.classes import APIException
-from core.schemas.base import APIDetailedResponse
 from core.services import otp
 from core.services.auth import AuthService
 
 router = APIRouter()
-
-APIUserResponse = APIDetailedResponse(UserResponse)
-APIRequestSMSResponse = APIDetailedResponse(None)
-APISignInUpResponse = APIDetailedResponse(UserSignInUpResponse)
 
 
 @router.post("/auth", name="user:auth", response_model=APISignInUpResponse)

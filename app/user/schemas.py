@@ -1,3 +1,5 @@
+from typing import Optional, Any
+
 from pydantic import BaseModel
 
 from app.user.models import UserRole
@@ -5,7 +7,7 @@ from app.user.utils import (
     get_random_password,
     get_random_phone_number,
 )
-from core.schemas.base import BaseORMSchema, BaseSchema
+from core.schemas.base import BaseORMSchema, BaseSchema, APIResponse
 
 
 class Chat(BaseModel):
@@ -83,3 +85,15 @@ class UserSignInUpResponse(BaseModel):
 
 class RequestSMSRequest(BaseModel):
     phone_number: str
+
+
+class APIUserResponse(APIResponse):
+    data: Optional[UserResponse] = None
+
+
+class APIRequestSMSResponse(APIResponse):
+    data: Optional[Any] = None
+
+
+class APISignInUpResponse(APIResponse):
+    data: Optional[UserSignInUpResponse] = None

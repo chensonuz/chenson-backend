@@ -6,9 +6,7 @@ CONFIG_SWAGGER_TRUE = {
     "redoc_url": "/redoc",
     "swagger_ui_parameters": {"operationsSorter": "method"},
     "version": "1.0",
-    "description": """
-        
-    """,
+    "description": """""",
     "author": "ChensonUz Dev",
 }
 

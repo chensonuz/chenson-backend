@@ -137,7 +137,7 @@ def add_exception_handlers(app: FastAPI):
         # }
         lines = traceback.format_exception(exc)[-1].replace("\n", "")
         err_msg = {
-            "message": [line.strip() for line in lines],
+            "message": lines,#[line.strip() for line in lines],
             "codeError": "internalError",
         }
         logger.error(err_msg)
