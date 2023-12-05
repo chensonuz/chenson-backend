@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
+from typing import List
 
 import jwt
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from loguru import logger
 
-from app.user.admin.models import AdminUser
-from app.user.admin.schemas import AdminAuthData
+from app.admin.schemas import AdminAuthData
+from app.user.models import UserRole
 from core.config import AppConfig
 from core.exceptions.classes import ForbiddenError, UnauthorizedError
 
@@ -30,40 +31,40 @@ class JWTBearer(HTTPBearer):
             raise ForbiddenError("Invalid authorization code.")
 
 
-def create_access_token(subject: AdminUser, expires_delta: int = None) -> str:
+def create_access_token(subject: dict, expires_delta: int = None) -> str:
     if expires_delta:
         expires_delta = datetime.utcnow() + timedelta(minutes=expires_delta)
     else:
         expires_delta = datetime.utcnow() + timedelta(
             minutes=AppConfig.ACCESS_TOKEN_EXPIRE_MINUTES
         )
-    data = AdminAuthData(
-        exp=expires_delta,
-        id=int(subject.id),
-        email=str(subject.email),
-        role=str(subject.role),
-    )
+    data = {
+        "exp": expires_delta,
+        "id": int(subject["id"]),
+        "email": str(subject["email"]),
+        "role": str(subject["role"]),
+    }
     encoded_jwt = jwt.encode(
-        data.model_dump(), AppConfig.ACCESS_SECRET_KEY, AppConfig.JWT_ALGORITHM
+        data, AppConfig.ACCESS_SECRET_KEY, AppConfig.JWT_ALGORITHM
     )
     return encoded_jwt
 
 
-def create_refresh_token(subject: AdminUser, expires_delta: int = None) -> str:
+def create_refresh_token(subject: dict, expires_delta: int = None) -> str:
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + timedelta(minutes=expires_delta)
     else:
         expires_delta = datetime.utcnow() + timedelta(
             minutes=AppConfig.REFRESH_TOKEN_EXPIRE_MINUTES
         )
-    data = AdminAuthData(
-        exp=expires_delta,
-        id=int(subject.id),
-        email=str(subject.email),
-        role=str(subject.role),
-    )
+    data = {
+        "exp": expires_delta,
+        "id": int(subject["id"]),
+        "email": str(subject["email"]),
+        "role": str(subject["role"]),
+    }
     encoded_jwt = jwt.encode(
-        data.model_dump(), AppConfig.REFRESH_SECRET_KEY, AppConfig.JWT_ALGORITHM
+        data, AppConfig.REFRESH_SECRET_KEY, AppConfig.JWT_ALGORITHM
     )
     return encoded_jwt
 
@@ -113,8 +114,8 @@ async def get_current_admin(token: str = Depends(JWTBearer())) -> AdminAuthData:
 
 
 class RoleChecker:
-    def __init__(self, allowed_roles: list):
-        self.allowed_roles = [role.casefold() for role in allowed_roles]
+    def __init__(self, allowed_roles: List[UserRole]):
+        self.allowed_roles = [role.value.casefold() for role in allowed_roles]
 
     def __call__(self, user: AdminAuthData = Depends(get_current_admin)):
         if user.role.casefold() not in self.allowed_roles:

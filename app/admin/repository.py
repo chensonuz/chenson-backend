@@ -1,4 +1,4 @@
-from app.user.admin.models import AdminUser
+from app.admin.models import AdminUser
 from core.repositories.base import SQLAlchemyRepository
 
 

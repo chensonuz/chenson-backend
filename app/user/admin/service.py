@@ -1,8 +1,11 @@
-from app.user.admin.auth import create_access_token, create_refresh_token
-from app.user.admin.models import AdminUser
-from app.user.admin.schemas import AdminLogInResponse
-from app.user.utils import verify_password
-from core.exceptions.classes import ForbiddenError
+from typing import List
+
+from app.user.admin.schemas import (
+    AdminUserUpdateRequest,
+    AdminUserCreateRequest,
+)
+from app.user.schemas import UserResponse
+from core.exceptions.classes import NotFoundError
 from core.services.uow import AbstractUnitOfWork
 
 
@@ -13,37 +16,94 @@ class AdminUserService:
     This service is responsible for admin-user-related operations
 
     List of responsibilities:
-    - authenticate admin user
+    - get all users
+    - get user by id
+    - create user
+    - update user by id
+    - delete user by id
     """
 
     @staticmethod
-    async def authenticate_admin(
-        uow: AbstractUnitOfWork, email: str, password: str
-    ) -> AdminLogInResponse:
+    async def get_all_users(uow: AbstractUnitOfWork) -> List[UserResponse]:
         """
-        Authenticate admin user
+        Get all users
 
-        This method is used to authenticate admin user by email and password.
-        If user doesn't exist, None is returned.
+        This method is used to get all users
 
         :param uow: unit of work instance
-        :param email: email as string
-        :param password: password as string
-        :return: admin user view model
+        :return: list of users
         """
         async with uow:
-            admin_user: AdminUser = (
-                await uow.admin_user.find_one_or_none_by_email(email)
+            users = await uow.user.find_all()
+            return [UserResponse.model_validate(user) for user in users]
+
+    @staticmethod
+    async def get_user(uow: AbstractUnitOfWork, id: int | str) -> UserResponse:
+        """
+        Get user by id
+
+        This method is used to get user by id
+
+        :param uow: unit of work instance
+        :param id: user id
+        :return: user
+        """
+        async with uow:
+            user = await uow.user.find_one_or_none(id)
+            if not user:
+                raise NotFoundError(message="User not found")
+            return UserResponse.model_validate(user)
+
+    @staticmethod
+    async def create_user(
+        uow: AbstractUnitOfWork, request: AdminUserCreateRequest
+    ) -> UserResponse:
+        """
+        Create user
+
+        This method is used to create user
+
+        :param uow: unit of work instance
+        :param request: user view model
+        :return: user
+        """
+        async with uow:
+            user_id = await uow.user.add_one(request.model_dump())
+            user = await uow.user.find_one(user_id)
+            return UserResponse.model_validate(user)
+
+    @staticmethod
+    async def update_user(
+        uow: AbstractUnitOfWork, id: int | str, request: AdminUserUpdateRequest
+    ) -> UserResponse:
+        """
+        Update user by id
+
+        This method is used to update user by id
+
+        :param uow: unit of work instance
+        :param id: user id
+        :param request: user view model
+        :return: user
+        """
+        async with uow:
+            await uow.user.update_one(
+                id, request.model_dump(exclude_unset=True)
             )
-            if not admin_user:
-                raise ForbiddenError(message="Incorrect email or password")
+            user = await uow.user.find_one(id)
+            return UserResponse.model_validate(user)
 
-            if not verify_password(password, admin_user.password):
-                raise ForbiddenError(message="Incorrect email or password")
+    @staticmethod
+    async def delete_user(uow: AbstractUnitOfWork, id: int | str) -> None:
+        """
+        Delete user by id
 
-            access_token = create_access_token(admin_user)
-            refresh_token = create_refresh_token(admin_user)
+        This method is used to delete user by id
 
-            return AdminLogInResponse(
-                access_token=access_token, refresh_token=refresh_token
-            )
+        :param uow: unit of work instance
+        :param id: user id
+        """
+        async with uow:
+            if not await uow.user.find_one_or_none(id):
+                raise NotFoundError(message="User not found")
+            await uow.user.delete_one(id)

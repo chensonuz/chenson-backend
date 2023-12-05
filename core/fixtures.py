@@ -2,20 +2,23 @@ import random
 
 from faker import Faker
 
+from app.admin.schemas import AdminUserBaseWithPassword
 from app.category.admin.schemas import AdminCategoryCreateRequest
 from app.dependencies import UnitOfWorkDep
 from app.product.schemas import ProductCreate
-from app.user.admin.schemas import (
-    AdminUserBaseWithPassword,
-)
+from app.uow import UnitOfWork
 from app.user.models import UserRole
 from app.user.utils import hash_password
 from core.config import AppConfig
 from core.database.db import engine, Base
+from core.services.uow import AbstractUnitOfWork
 
 
 async def init_models():
-    async with engine.begin() as conn:
+    uow: AbstractUnitOfWork = UnitOfWork()
+    async with uow, engine.begin() as conn:
+        if await uow.admin_user.find_all():
+            return
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
@@ -28,8 +31,11 @@ async def create_fixtures(uow: UnitOfWorkDep):
             password=hash_password(AppConfig.FIRST_SUPERUSER_PASSWORD),
             role=UserRole.Admin,
         )
-        await uow.admin_user.add_one(admin_user.model_dump(exclude_none=True))
-        await uow.commit()
+        if not await uow.admin_user.find_one_or_none_by_email(admin_user.email):
+            await uow.admin_user.add_one(
+                admin_user.model_dump(exclude_none=True)
+            )
+            await uow.commit()
     async with uow:
         for _ in range(5):
             cat_obj = AdminCategoryCreateRequest(

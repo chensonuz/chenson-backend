@@ -125,10 +125,14 @@ def add_exception_handlers(app: FastAPI):
         #     "codeError": "internalError",
         # }
         lines = traceback.format_exception(exc)[-1].replace("\n", "")
-        err_msg = {
-            "message": lines,  # [line.strip() for line in lines],
-            "codeError": "internalError",
-        }
+        err_msg = APIResponse(
+            success=False,
+            message="Internal Server Error",
+            data={
+                "message": lines,
+                "codeError": "internalError",
+            },
+        )
         logger.error(err_msg)
         return JSONResponse(
             status_code=status_code,

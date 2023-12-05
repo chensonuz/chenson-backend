@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 
 from app.category.admin.schemas import (
-    AdminCategoryUpdatePartialRequest,
     AdminCategoryCreateRequest,
+    AdminCategoryUpdateRequest,
 )
 from app.category.admin.service import AdminCategoryService
 from app.category.schemas import (
@@ -51,12 +51,10 @@ async def category_create(
 @router.patch("/{category_id}", response_model=APIResponse)
 async def category_update(
     category_id: int | str,
-    request: AdminCategoryUpdatePartialRequest,
+    request: AdminCategoryUpdateRequest,
     uow: UnitOfWorkDep,
 ):
-    await AdminCategoryService.update_partial(
-        uow=uow, id=category_id, data=request
-    )
+    await AdminCategoryService.update(uow=uow, id=category_id, data=request)
     return APIResponse(success=True, message="Category updated.")
 
 

@@ -1,50 +1,103 @@
-from loguru import logger
+from typing import List
 
 from app.category.admin.schemas import (
     AdminCategoryCreateRequest,
     AdminCategoryUpdateRequest,
-    AdminCategoryUpdatePartialRequest,
 )
 from app.category.schemas import CategoryResponse
 from app.dependencies import UnitOfWorkDep
+from core.exceptions.classes import NotFoundError
 
 
 class AdminCategoryService:
+    """Admin Category service
+
+    This service is responsible for admin-category-related operations
+
+    List of responsibilities:
+    - create category
+    - update category
+    - delete category
+    - get all categories
+    - get category
+    """
+
     @staticmethod
     async def create(
         uow: UnitOfWorkDep, data: AdminCategoryCreateRequest
     ) -> int | str:
-        return await uow.admin_category.add_one(data.model_dump())
+        """Create new category
+
+        This method is used to create new category
+
+        :param uow: unit of work instance
+        :param data: category view model
+        :return: category id
+        """
+        async with uow:
+            return await uow.category.add_one(data.model_dump())
 
     @staticmethod
     async def update(
-        uow: UnitOfWorkDep, id: int | str, data: AdminCategoryUpdateRequest
-    ) -> None:
-        logger.info(await uow.admin_category.update_one(id, data.model_dump()))
-
-    @staticmethod
-    async def update_partial(
         uow: UnitOfWorkDep,
         id: int | str,
-        data: AdminCategoryUpdatePartialRequest,
+        data: AdminCategoryUpdateRequest,
     ) -> None:
-        logger.info(
-            await uow.admin_category.update_one(
+        """Update category by id
+
+        This method is used to update category by id
+
+        :param uow: unit of work instance
+        :param id: category id
+        :param data: category view model
+        """
+        async with uow:
+            if not await uow.category.find_one_or_none(id):
+                raise NotFoundError(message="Category not found")
+            await uow.category.update_one(
                 id, data.model_dump(exclude_unset=True)
             )
-        )
 
     @staticmethod
     async def delete(uow: UnitOfWorkDep, id: int | str) -> None:
-        logger.info(await uow.admin_category.delete_one(id))
+        """Delete category by id
+
+        This method is used to delete category by id
+
+        :param uow: unit of work instance
+        :param id: category id
+        :return: category id
+        """
+        async with uow:
+            if not await uow.category.find_one_or_none(id):
+                raise NotFoundError(message="Category not found")
+            await uow.category.delete_one(id)
 
     @staticmethod
-    async def get_all(uow: UnitOfWorkDep) -> list[CategoryResponse]:
-        response = await uow.admin_category.find_all()
-        return [CategoryResponse.model_validate(item) for item in response]
+    async def get_all(uow: UnitOfWorkDep) -> List[CategoryResponse]:
+        """Get all categories
+
+        This method is used to get all categories
+
+        :param uow: unit of work instance
+        :return: list of categories
+        """
+        async with uow:
+            response = await uow.category.find_all()
+            return [CategoryResponse.model_validate(item) for item in response]
 
     @staticmethod
-    async def get(uow: UnitOfWorkDep, id: int | str) -> CategoryResponse | None:
-        response = await uow.admin_category.find_one_or_none(id)
-        if response:
+    async def get(uow: UnitOfWorkDep, id: int | str) -> CategoryResponse:
+        """Get category by id
+
+        This method is used to get category by id
+
+        :param uow: unit of work instance
+        :param id: category id
+        :return: category
+        """
+        async with uow:
+            response = await uow.category.find_one_or_none(id)
+            if not response:
+                raise NotFoundError(message="Category not found")
             return CategoryResponse.model_validate(response)

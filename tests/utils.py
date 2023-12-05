@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Tuple
 
 from app.user.schemas import TelegramUser
-from core.config._main import _Config
+from core.config import _Config
 
 TestConfig = _Config()
 

@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Any, List
 
 from pydantic import BaseModel
 
@@ -88,12 +88,16 @@ class RequestSMSRequest(BaseModel):
 
 
 class APIUserResponse(APIResponse):
-    data: Optional[UserResponse] = None
+    data: UserResponse | None = None
+
+
+class APIUserListResponse(APIResponse):
+    data: List[UserResponse] = None
 
 
 class APIRequestSMSResponse(APIResponse):
-    data: Optional[Any] = None
+    data: Any = None
 
 
 class APISignInUpResponse(APIResponse):
-    data: Optional[UserSignInUpResponse] = None
+    data: UserSignInUpResponse | None = None

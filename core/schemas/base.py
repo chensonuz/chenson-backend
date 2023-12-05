@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -6,7 +7,15 @@ from pydantic import BaseModel, ConfigDict
 class APIResponse(BaseModel):
     success: bool
     message: str
-    data: dict | None = None
+    data: Any = None
+
+
+class APIResponseID(BaseModel):
+    id: int | str
+
+
+class APIResponseWithID(APIResponse):
+    data: APIResponseID = None
 
 
 class BaseSchema(BaseModel):
@@ -15,4 +24,8 @@ class BaseSchema(BaseModel):
 
 
 class BaseORMSchema(BaseSchema):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+
+
+class EmptySchema(BaseModel):
+    pass

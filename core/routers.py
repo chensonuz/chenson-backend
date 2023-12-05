@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 
+from app.admin.router import router as admin_router
 from app.category.admin.router import router as admin_categories_router
 from app.category.router import router as categories_router
+from app.product.admin.router import router as admin_products_router
 from app.product.router import router as products_router
 from app.user.admin.router import router as admin_users_router
 from app.user.router import router as users_router
@@ -39,10 +41,21 @@ def add_app_routers(app: FastAPI):
         prefix=f"{AppConfig.PREFIX}/admin/categories",
         tags=["admin_categories"],
     )
+
     app.include_router(
-        router=admin_users_router,
-        prefix=f"{AppConfig.PREFIX}/admin",
-        tags=["admin_auth"],
+        router=admin_products_router,
+        prefix=f"{AppConfig.PREFIX}/admin/products",
+        tags=["admin_products"],
     )
 
+    app.include_router(
+        router=admin_users_router,
+        prefix=f"{AppConfig.PREFIX}/admin/users",
+        tags=["admin_users"],
+    )
 
+    app.include_router(
+        router=admin_router,
+        prefix=f"{AppConfig.PREFIX}/admin",
+        tags=["admin"],
+    )
