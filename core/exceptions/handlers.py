@@ -12,12 +12,12 @@ from core.schemas.base import APIResponse
 
 def add_exception_handlers(app: FastAPI):
     @app.exception_handler(ex.UnprocessableEntityError)
-    async def unproccesable_exception_handler(
+    async def unprocessable_exception_handler(
         request: Request, exc: ex.UnprocessableEntityError
     ):
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content=jsonable_encoder(exc.name),
+            content=jsonable_encoder(exc.response),
         )
 
     @app.exception_handler(ex.APIException)
@@ -46,7 +46,7 @@ def add_exception_handlers(app: FastAPI):
     ):
         return JSONResponse(
             status_code=status_code,
-            content=jsonable_encoder(exc.name),
+            content=jsonable_encoder(exc.response),
         )
 
     @app.exception_handler(ex.ConflictError)
@@ -57,7 +57,7 @@ def add_exception_handlers(app: FastAPI):
     ):
         return JSONResponse(
             status_code=status_code,
-            content=jsonable_encoder(exc.name),
+            content=jsonable_encoder(exc.response),
         )
 
     @app.exception_handler(ex.UnauthorizedError)
@@ -65,17 +65,6 @@ def add_exception_handlers(app: FastAPI):
         request: Request,
         exc: ex.UnauthorizedError,
         status_code: status = status.HTTP_401_UNAUTHORIZED,
-    ):
-        return JSONResponse(
-            status_code=status_code,
-            content=jsonable_encoder(exc.response),
-        )
-
-    @app.exception_handler(ex.ValuePydanticError)
-    async def value_error_exception_handler(
-        request: Request,
-        exc: ex.ValuePydanticError,
-        status_code: status = status.HTTP_422_UNPROCESSABLE_ENTITY,
     ):
         return JSONResponse(
             status_code=status_code,
@@ -90,7 +79,7 @@ def add_exception_handlers(app: FastAPI):
     ):
         return JSONResponse(
             status_code=status_code,
-            content=jsonable_encoder(exc.name),
+            content=jsonable_encoder(exc.response),
         )
 
     @app.exception_handler(ex.RequestError)
@@ -100,7 +89,7 @@ def add_exception_handlers(app: FastAPI):
         status_code: status = status.HTTP_424_FAILED_DEPENDENCY,
     ):
         return JSONResponse(
-            status_code=status_code, content=jsonable_encoder(exc.name)
+            status_code=status_code, content=jsonable_encoder(exc.response)
         )
 
     @app.exception_handler(ex.InternalError)
@@ -110,7 +99,7 @@ def add_exception_handlers(app: FastAPI):
         status_code: status = status.HTTP_500_INTERNAL_SERVER_ERROR,
     ):
         return JSONResponse(
-            status_code=status_code, content=jsonable_encoder(exc.name)
+            status_code=status_code, content=jsonable_encoder(exc.response)
         )
 
     @app.exception_handler(ex.IntegrationError)
@@ -120,7 +109,7 @@ def add_exception_handlers(app: FastAPI):
         status_code: status = status.HTTP_503_SERVICE_UNAVAILABLE,
     ):
         return JSONResponse(
-            status_code=status_code, content=jsonable_encoder(exc.name)
+            status_code=status_code, content=jsonable_encoder(exc.response)
         )
 
     @app.exception_handler(Exception)
@@ -137,7 +126,7 @@ def add_exception_handlers(app: FastAPI):
         # }
         lines = traceback.format_exception(exc)[-1].replace("\n", "")
         err_msg = {
-            "message": lines,#[line.strip() for line in lines],
+            "message": lines,  # [line.strip() for line in lines],
             "codeError": "internalError",
         }
         logger.error(err_msg)

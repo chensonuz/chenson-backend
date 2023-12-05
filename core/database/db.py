@@ -24,6 +24,7 @@ async def get_session() -> AsyncSession:
             yield session
         except SQLAlchemyError as e:
             logger.exception(e)
+        await session.close()
 
 
 convention = {

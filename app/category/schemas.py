@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from core.schemas.base import BaseORMSchema, BaseSchema, APIResponse
+from core.schemas.base import BaseORMSchema, APIResponse
 
 
 class CategoryBase(BaseModel):
@@ -29,9 +29,12 @@ class CategoryResponse(BaseORMSchema, CategoryBaseIDSchema, CategoryBase):
     pass
 
 
-class CategoryCreate(BaseSchema):
-    title: str
-    status: bool | None = True
+class APICategoryCreatedResponse(APIResponse):
+    data: int | str = None
+
+
+class APICategoryResponse(APIResponse):
+    data: CategoryResponse = None
 
 
 class APICategoryListResponse(APIResponse):

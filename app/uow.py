@@ -1,5 +1,7 @@
+from app.category.admin.repository import AdminCategoryRepository
 from app.category.repository import CategoryRepository
 from app.product.repository import ProductRepository
+from app.user.admin.repository import AdminUserRepository
 from app.user.repository import UserRepository
 from core.database.db import async_session
 from core.services.uow import AbstractUnitOfWork
@@ -16,6 +18,10 @@ class UnitOfWork(AbstractUnitOfWork):
     async def __aenter__(self):
         self.session = self.session_factory()
 
+        self.admin_user: AdminUserRepository = AdminUserRepository(self.session)
+        self.admin_category: AdminCategoryRepository = AdminCategoryRepository(
+            self.session
+        )
         self.user: UserRepository = UserRepository(self.session)
         self.category: CategoryRepository = CategoryRepository(self.session)
         self.product: ProductRepository = ProductRepository(self.session)

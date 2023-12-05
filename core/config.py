@@ -13,9 +13,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class _Config(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=os.path.join(os.path.dirname(BASE_DIR), ".env"), extra="forbid"
-    )
+    model_config = SettingsConfigDict(env_file=".env", extra="forbid")
 
     DEBUG: bool = True
     SECRET_KEY: str = secrets.token_urlsafe(32)
@@ -54,4 +52,23 @@ class _Config(BaseSettings):
         return v + defaults
 
 
+CONFIG_SWAGGER_TRUE = {
+    "title": "ChensonUz",
+    "docs_url": "/docs",
+    "redoc_url": "/redoc",
+    "swagger_ui_parameters": {"operationsSorter": "method"},
+    "version": "1.0",
+    "description": """""",
+    "author": "ChensonUz Dev",
+}
+
+CONFIG_SWAGGER_FALSE = {
+    "docs_url": None,
+    "redoc_url": None,
+}
+
 AppConfig = _Config()
+
+
+def get_swagger_config() -> dict:
+    return CONFIG_SWAGGER_TRUE if AppConfig.SHOW_DOCS else CONFIG_SWAGGER_FALSE

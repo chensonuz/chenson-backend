@@ -34,19 +34,7 @@ class ValuePydanticError(BaseAppError):
     pass
 
 
-class TwilioError(BaseAppError):
-    pass
-
-
 class ForbiddenError(BaseAppError):
-    pass
-
-
-class TerraSmsError(BaseAppError):
-    pass
-
-
-class BadPhoneCodeError(BaseAppError):
     pass
 
 
@@ -55,10 +43,6 @@ class PhoneError(BaseAppError):
 
 
 class RetrySmsError(BaseAppError):
-    pass
-
-
-class OrderStatusError(BaseAppError):
     pass
 
 
