@@ -29,10 +29,6 @@ class CategoryResponse(BaseORMSchema, CategoryBaseIDSchema, CategoryBase):
     pass
 
 
-class APICategoryCreatedResponse(APIResponse):
-    data: int | str = None
-
-
 class APICategoryResponse(APIResponse):
     data: CategoryResponse = None
 

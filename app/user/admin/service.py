@@ -57,7 +57,7 @@ class AdminUserService:
     @staticmethod
     async def create_user(
         uow: AbstractUnitOfWork, request: AdminUserCreateRequest
-    ) -> UserResponse:
+    ) -> int | str:
         """
         Create user
 
@@ -68,14 +68,12 @@ class AdminUserService:
         :return: user
         """
         async with uow:
-            user_id = await uow.user.add_one(request.model_dump())
-            user = await uow.user.find_one(user_id)
-            return UserResponse.model_validate(user)
+            return await uow.user.add_one(request.model_dump())
 
     @staticmethod
     async def update_user(
         uow: AbstractUnitOfWork, id: int | str, request: AdminUserUpdateRequest
-    ) -> UserResponse:
+    ) -> None:
         """
         Update user by id
 
@@ -87,11 +85,11 @@ class AdminUserService:
         :return: user
         """
         async with uow:
+            if not await uow.user.find_one_or_none(id):
+                raise NotFoundError(message="User not found")
             await uow.user.update_one(
                 id, request.model_dump(exclude_unset=True)
             )
-            user = await uow.user.find_one(id)
-            return UserResponse.model_validate(user)
 
     @staticmethod
     async def delete_user(uow: AbstractUnitOfWork, id: int | str) -> None:
