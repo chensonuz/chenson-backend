@@ -73,7 +73,7 @@ class AdminUserService:
     @staticmethod
     async def update_user(
         uow: AbstractUnitOfWork, id: int, request: AdminUserUpdateRequest
-    ) -> None:
+    ) -> int:
         """
         Update user by id
 
@@ -87,12 +87,12 @@ class AdminUserService:
         async with uow:
             if not await uow.user.find_one_or_none(id):
                 raise NotFoundError(message="User not found")
-            await uow.user.update_one(
+            return await uow.user.update_one(
                 id, request.model_dump(exclude_unset=True)
             )
 
     @staticmethod
-    async def delete_user(uow: AbstractUnitOfWork, id: int) -> None:
+    async def delete_user(uow: AbstractUnitOfWork, id: int) -> int:
         """
         Delete user by id
 
@@ -104,4 +104,4 @@ class AdminUserService:
         async with uow:
             if not await uow.user.find_one_or_none(id):
                 raise NotFoundError(message="User not found")
-            await uow.user.delete_one(id)
+            return await uow.user.delete_one(id)

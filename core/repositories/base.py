@@ -117,7 +117,12 @@ class SQLAlchemyRepository(AbstractRepository):
         return res.scalar_one_or_none()
 
     async def update_one(self, id: str | int, data: dict, **kwargs):
-        stmt = update(self.model).where(self.model.id == id).values(**data)
+        stmt = (
+            update(self.model)
+            .where(self.model.id == id)
+            .values(**data)
+            .returning(self.model.id)
+        )
         if "options" in kwargs:
             for option in kwargs["options"]:
                 stmt = stmt.options(option)

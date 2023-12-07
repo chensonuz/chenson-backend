@@ -42,7 +42,7 @@ class AdminCategoryService:
         uow: UnitOfWorkDep,
         id: int,
         data: AdminCategoryUpdateRequest,
-    ) -> None:
+    ) -> int:
         """Update category by id
 
         This method is used to update category by id
@@ -54,7 +54,7 @@ class AdminCategoryService:
         async with uow:
             if not await uow.category.find_one_or_none(id):
                 raise NotFoundError(message="Category not found")
-            await uow.category.update_one(
+            return await uow.category.update_one(
                 id, data.model_dump(exclude_unset=True)
             )
 

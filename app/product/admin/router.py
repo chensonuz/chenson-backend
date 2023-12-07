@@ -41,21 +41,23 @@ async def admin_create_product(
 async def admin_update_product(
     uow: UnitOfWorkDep, product_id: int, data: AdminProductUpdateRequest
 ):
-    await AdminProductService.update(uow=uow, id=product_id, data=data)
+    updated_id = await AdminProductService.update(
+        uow=uow, id=product_id, data=data
+    )
     return APIResponseWithID(
         success=True,
         message="Product updated.",
-        data=APIResponseID(id=product_id),
+        data=APIResponseID(id=updated_id),
     )
 
 
 @router.delete("/{product_id}", response_model=APIResponseWithID)
 async def admin_delete_product(uow: UnitOfWorkDep, product_id: int):
-    await AdminProductService.delete(uow=uow, id=product_id)
+    deleted_id = await AdminProductService.delete(uow=uow, id=product_id)
     return APIResponseWithID(
         success=True,
         message="Product deleted.",
-        data=APIResponseID(id=product_id),
+        data=APIResponseID(id=deleted_id),
     )
 
 

@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends
 
-from fastapi import APIRouter, Depends
-
 from app.dependencies import UnitOfWorkDep
 from app.permissions import is_admin
 from app.user.admin.schemas import (
@@ -49,19 +47,21 @@ async def admin_create_user(
 async def admin_update_user(
     user_id: int, request: AdminUserUpdateRequest, uow: UnitOfWorkDep
 ):
-    await AdminUserService.update_user(uow=uow, id=user_id, request=request)
+    updated_id = await AdminUserService.update_user(
+        uow=uow, id=user_id, request=request
+    )
     return APIResponseWithID(
         success=True,
         message="User updated.",
-        data=APIResponseID(id=user_id),
+        data=APIResponseID(id=updated_id),
     )
 
 
 @router.delete("/{user_id}", response_model=APIResponseWithID)
 async def admin_delete_user(user_id: int, uow: UnitOfWorkDep):
-    await AdminUserService.delete_user(uow=uow, id=user_id)
+    deleted_id = await AdminUserService.delete_user(uow=uow, id=user_id)
     return APIResponseWithID(
         success=True,
         message="User deleted.",
-        data=APIResponseID(id=user_id),
+        data=APIResponseID(id=deleted_id),
     )

@@ -52,11 +52,13 @@ async def category_update(
     request: AdminCategoryUpdateRequest,
     uow: UnitOfWorkDep,
 ):
-    await AdminCategoryService.update(uow=uow, id=category_id, data=request)
+    updated_id = await AdminCategoryService.update(
+        uow=uow, id=category_id, data=request
+    )
     return APIResponseWithID(
         success=True,
         message="Category updated.",
-        data=APIResponseID(id=category_id),
+        data=APIResponseID(id=updated_id),
     )
 
 

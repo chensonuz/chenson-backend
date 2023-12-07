@@ -40,7 +40,7 @@ class AdminProductService:
     @staticmethod
     async def update(
         uow: UnitOfWorkDep, id: int, data: AdminProductUpdateRequest
-    ) -> None:
+    ) -> int:
         """Update product
 
         This method is used to update product
@@ -53,12 +53,12 @@ class AdminProductService:
         async with uow:
             if not await uow.product.find_one_or_none(id):
                 raise NotFoundError(message="Product not found")
-            await uow.product.update_one(
+            return await uow.product.update_one(
                 id, data.model_dump(exclude_unset=True)
             )
 
     @staticmethod
-    async def delete(uow: UnitOfWorkDep, id: int) -> None:
+    async def delete(uow: UnitOfWorkDep, id: int) -> int:
         """Delete product
 
         This method is used to delete product
@@ -70,7 +70,7 @@ class AdminProductService:
         async with uow:
             if not await uow.product.find_one_or_none(id):
                 raise NotFoundError(message="Product not found")
-            await uow.product.delete_one(id)
+            return await uow.product.delete_one(id)
 
     @staticmethod
     async def get_all(uow: UnitOfWorkDep) -> List[ProductResponse]:
