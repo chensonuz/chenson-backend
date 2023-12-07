@@ -38,7 +38,7 @@ class AdminUserService:
             return [UserResponse.model_validate(user) for user in users]
 
     @staticmethod
-    async def get_user(uow: AbstractUnitOfWork, id: int | str) -> UserResponse:
+    async def get_user(uow: AbstractUnitOfWork, id: int) -> UserResponse:
         """
         Get user by id
 
@@ -72,7 +72,7 @@ class AdminUserService:
 
     @staticmethod
     async def update_user(
-        uow: AbstractUnitOfWork, id: int | str, request: AdminUserUpdateRequest
+        uow: AbstractUnitOfWork, id: int, request: AdminUserUpdateRequest
     ) -> None:
         """
         Update user by id
@@ -92,7 +92,7 @@ class AdminUserService:
             )
 
     @staticmethod
-    async def delete_user(uow: AbstractUnitOfWork, id: int | str) -> None:
+    async def delete_user(uow: AbstractUnitOfWork, id: int) -> None:
         """
         Delete user by id
 

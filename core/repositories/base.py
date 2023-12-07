@@ -60,6 +60,7 @@ class SQLAlchemyRepository(AbstractRepository):
         stmt = insert(self.model).values(**data).returning(self.model.id)
         try:
             res = await self.session.execute(stmt)
+            await self.session.commit()
             return res.scalar_one()
         except SQLAlchemyError as e:
             await self.session.rollback()
@@ -122,15 +123,21 @@ class SQLAlchemyRepository(AbstractRepository):
                 stmt = stmt.options(option)
         try:
             res = await self.session.execute(stmt)
+            await self.session.commit()
             return res.scalar_one_or_none()
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise ConflictError(str(e)) from e
 
     async def delete_one(self, id: str | int):
-        stmt = delete(self.model).where(self.model.id == id)
+        stmt = (
+            delete(self.model)
+            .where(self.model.id == id)
+            .returning(self.model.id)
+        )
         try:
             res = await self.session.execute(stmt)
+            await self.session.commit()
             return res.scalar_one_or_none()
         except SQLAlchemyError as e:
             await self.session.rollback()

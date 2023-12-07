@@ -25,7 +25,7 @@ async def category_get_all(uow: UnitOfWorkDep):
 
 
 @router.get("/{category_id}", response_model=APICategoryResponse)
-async def category_get(category_id: int | str, uow: UnitOfWorkDep):
+async def category_get(category_id: int, uow: UnitOfWorkDep):
     response = await AdminCategoryService.get(uow=uow, id=category_id)
     return APICategoryResponse(
         success=response is not None,
@@ -48,7 +48,7 @@ async def category_create(
 
 @router.patch("/{category_id}", response_model=APIResponseWithID)
 async def category_update(
-    category_id: int | str,
+    category_id: int,
     request: AdminCategoryUpdateRequest,
     uow: UnitOfWorkDep,
 ):
@@ -61,10 +61,10 @@ async def category_update(
 
 
 @router.delete("/{category_id}", response_model=APIResponseWithID)
-async def category_delete(category_id: int | str, uow: UnitOfWorkDep):
-    await AdminCategoryService.delete(uow=uow, id=category_id)
+async def category_delete(category_id: int, uow: UnitOfWorkDep):
+    deleted_id = await AdminCategoryService.delete(uow=uow, id=category_id)
     return APIResponseWithID(
         success=True,
         message="Category deleted.",
-        data=APIResponseID(id=category_id),
+        data=APIResponseID(id=deleted_id),
     )

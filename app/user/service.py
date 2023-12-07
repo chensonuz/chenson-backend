@@ -51,5 +51,4 @@ class UserService:
         """
         async with uow:
             user_id = await uow.user.add_one(user.model_dump(exclude_none=True))
-            await uow.commit()
             return user_id

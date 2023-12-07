@@ -39,7 +39,7 @@ class AdminProductService:
 
     @staticmethod
     async def update(
-        uow: UnitOfWorkDep, id: int | str, data: AdminProductUpdateRequest
+        uow: UnitOfWorkDep, id: int, data: AdminProductUpdateRequest
     ) -> None:
         """Update product
 
@@ -58,7 +58,7 @@ class AdminProductService:
             )
 
     @staticmethod
-    async def delete(uow: UnitOfWorkDep, id: int | str) -> None:
+    async def delete(uow: UnitOfWorkDep, id: int) -> None:
         """Delete product
 
         This method is used to delete product
@@ -88,7 +88,7 @@ class AdminProductService:
             ]
 
     @staticmethod
-    async def get(uow: UnitOfWorkDep, id: int | str) -> ProductResponse:
+    async def get(uow: UnitOfWorkDep, id: int) -> ProductResponse:
         """Get product by id
 
         This method is used to get product by id

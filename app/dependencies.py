@@ -31,7 +31,7 @@ async def get_current_user(
     return user
 
 
-async def get_target_user(user_id: int | str, uow: UnitOfWorkDep) -> int | str:
+async def get_target_user(user_id: int, uow: UnitOfWorkDep) -> int | str:
     user = await UserService.get_user(uow, user_id)
     if not user:
         raise NotFoundError(message="User not found")

@@ -40,7 +40,7 @@ class AdminCategoryService:
     @staticmethod
     async def update(
         uow: UnitOfWorkDep,
-        id: int | str,
+        id: int,
         data: AdminCategoryUpdateRequest,
     ) -> None:
         """Update category by id
@@ -59,7 +59,7 @@ class AdminCategoryService:
             )
 
     @staticmethod
-    async def delete(uow: UnitOfWorkDep, id: int | str) -> None:
+    async def delete(uow: UnitOfWorkDep, id: int) -> int:
         """Delete category by id
 
         This method is used to delete category by id
@@ -71,7 +71,7 @@ class AdminCategoryService:
         async with uow:
             if not await uow.category.find_one_or_none(id):
                 raise NotFoundError(message="Category not found")
-            await uow.category.delete_one(id)
+            return await uow.category.delete_one(id)
 
     @staticmethod
     async def get_all(uow: UnitOfWorkDep) -> List[CategoryResponse]:
@@ -87,7 +87,7 @@ class AdminCategoryService:
             return [CategoryResponse.model_validate(item) for item in response]
 
     @staticmethod
-    async def get(uow: UnitOfWorkDep, id: int | str) -> CategoryResponse:
+    async def get(uow: UnitOfWorkDep, id: int) -> CategoryResponse:
         """Get category by id
 
         This method is used to get category by id

@@ -16,11 +16,19 @@ from core.services.uow import AbstractUnitOfWork
 
 async def init_models():
     uow: AbstractUnitOfWork = UnitOfWork()
-    async with uow, engine.begin() as conn:
-        if await uow.admin_user.find_all():
-            return
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+    async with uow:
+        try:
+            if await uow.admin_user.find_all():
+                return
+            await create_fixtures(uow)
+        except:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.drop_all)
+                await conn.run_sync(Base.metadata.create_all)
+
+    async with uow:
+        if not await uow.admin_user.find_all():
+            await create_fixtures(uow)
 
 
 async def create_fixtures(uow: UnitOfWorkDep):

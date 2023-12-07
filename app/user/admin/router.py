@@ -25,7 +25,7 @@ async def admin_get_users(uow: UnitOfWorkDep):
 
 
 @router.get("/{user_id}", response_model=APIUserResponse)
-async def admin_get_user(user_id: int | str, uow: UnitOfWorkDep):
+async def admin_get_user(user_id: int, uow: UnitOfWorkDep):
     return APIUserResponse(
         success=True,
         message="User retrieved.",
@@ -47,7 +47,7 @@ async def admin_create_user(
 
 @router.patch("/{user_id}", response_model=APIResponseWithID)
 async def admin_update_user(
-    user_id: int | str, request: AdminUserUpdateRequest, uow: UnitOfWorkDep
+    user_id: int, request: AdminUserUpdateRequest, uow: UnitOfWorkDep
 ):
     await AdminUserService.update_user(uow=uow, id=user_id, request=request)
     return APIResponseWithID(
@@ -58,7 +58,7 @@ async def admin_update_user(
 
 
 @router.delete("/{user_id}", response_model=APIResponseWithID)
-async def admin_delete_user(user_id: int | str, uow: UnitOfWorkDep):
+async def admin_delete_user(user_id: int, uow: UnitOfWorkDep):
     await AdminUserService.delete_user(uow=uow, id=user_id)
     return APIResponseWithID(
         success=True,
