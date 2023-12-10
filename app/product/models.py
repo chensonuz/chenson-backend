@@ -8,7 +8,7 @@ from core.database.mixins import CreatedUpdatedMixin
 class Product(Base, CreatedUpdatedMixin):
     __tablename__ = "products"
     category_id: Mapped[int | None] = mapped_column(
-        Integer, ForeignKey("categories.id", ondelete="SET NULL")
+        Integer, ForeignKey("categories.id")
     )
     title: Mapped[str]
     description: Mapped[str]

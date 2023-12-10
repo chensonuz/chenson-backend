@@ -6,7 +6,7 @@ from app.category.admin.schemas import (
 )
 from app.category.schemas import CategoryResponse
 from app.dependencies import UnitOfWorkDep
-from core.exceptions.classes import NotFoundError
+from core.exceptions.classes import NotFoundError, ConflictError
 
 
 class AdminCategoryService:
@@ -71,6 +71,10 @@ class AdminCategoryService:
         async with uow:
             if not await uow.category.find_one_or_none(id):
                 raise NotFoundError(message="Category not found")
+            if await uow.product.find_all_by_category_id(id):
+                raise ConflictError(
+                    message="Category has children. Delete them first"
+                )
             return await uow.category.delete_one(id)
 
     @staticmethod

@@ -17,7 +17,7 @@ router = APIRouter(dependencies=[Depends(is_admin)])
 
 
 @router.get("", response_model=APICategoryListResponse)
-async def category_get_all(uow: UnitOfWorkDep):
+async def admin_category_get_all(uow: UnitOfWorkDep):
     response = await AdminCategoryService.get_all(uow=uow)
     return APICategoryListResponse(
         success=True, message="Categories retrieved.", data=response
@@ -25,7 +25,7 @@ async def category_get_all(uow: UnitOfWorkDep):
 
 
 @router.get("/{category_id}", response_model=APICategoryResponse)
-async def category_get(category_id: int, uow: UnitOfWorkDep):
+async def admin_category_get(category_id: int, uow: UnitOfWorkDep):
     response = await AdminCategoryService.get(uow=uow, id=category_id)
     return APICategoryResponse(
         success=response is not None,
@@ -35,7 +35,7 @@ async def category_get(category_id: int, uow: UnitOfWorkDep):
 
 
 @router.post("", response_model=APIResponseWithID, status_code=201)
-async def category_create(
+async def admin_category_create(
     request: AdminCategoryCreateRequest, uow: UnitOfWorkDep
 ):
     created_id = await AdminCategoryService.create(uow=uow, data=request)
@@ -47,7 +47,7 @@ async def category_create(
 
 
 @router.patch("/{category_id}", response_model=APIResponseWithID)
-async def category_update(
+async def admin_category_update(
     category_id: int,
     request: AdminCategoryUpdateRequest,
     uow: UnitOfWorkDep,
@@ -63,7 +63,7 @@ async def category_update(
 
 
 @router.delete("/{category_id}", response_model=APIResponseWithID)
-async def category_delete(category_id: int, uow: UnitOfWorkDep):
+async def admin_category_delete(category_id: int, uow: UnitOfWorkDep):
     deleted_id = await AdminCategoryService.delete(uow=uow, id=category_id)
     return APIResponseWithID(
         success=True,

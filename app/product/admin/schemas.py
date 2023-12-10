@@ -2,12 +2,16 @@ from pydantic import BaseModel
 
 
 class AdminProductCreateRequest(BaseModel):
-    name: str
-    price: float
+    category_id: int
+    title: str
     description: str
+    price: int
+    status: bool | None = False
 
 
 class AdminProductUpdateRequest(BaseModel):
-    name: str | None = None
-    price: float | None = None
-    description: str | None = None
+    category_id: int
+    title: str
+    description: str
+    price: int
+    status: bool | None = False
