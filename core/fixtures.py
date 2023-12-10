@@ -5,7 +5,7 @@ from faker import Faker
 from app.admin.schemas import AdminUserBaseWithPassword
 from app.category.admin.schemas import AdminCategoryCreateRequest
 from app.dependencies import UnitOfWorkDep
-from app.product.schemas import ProductCreate
+from app.product.admin.schemas import AdminProductCreateRequest
 from app.uow import UnitOfWork
 from app.user.models import UserRole
 from app.user.utils import hash_password
@@ -54,7 +54,7 @@ async def create_fixtures(uow: UnitOfWorkDep):
             )
             await uow.commit()
             for _ in range(random.randint(0, 10)):
-                product_obj = ProductCreate(
+                product_obj = AdminProductCreateRequest(
                     category_id=category_id,
                     title=fake.text(max_nb_chars=10).replace(".", ""),
                     description=fake.text(max_nb_chars=50),
