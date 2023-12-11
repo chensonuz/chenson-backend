@@ -7,13 +7,13 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = {extras = ["uvicorn"], version = "^0.104.1"}
+fastapi = { extras = ["uvicorn"], version = "^0.104.1" }
 sqlalchemy = "^2.0.23"
 uvicorn = "^0.24.0.post1"
 asyncpg = "^0.29.0"
 aiogram = "^3.2.0"
 pydantic-settings = "^2.1.0"
-pydantic = {extras = ["email"], version = "^2.5.2"}
+pydantic = { extras = ["email"], version = "^2.5.2" }
 loguru = "^0.7.2"
 pyjwt = "^2.8.0"
 httpx = "^0.25.2"

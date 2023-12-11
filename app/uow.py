@@ -1,6 +1,6 @@
+from app.admin.repository import AdminUserRepository
 from app.category.repository import CategoryRepository
 from app.product.repository import ProductRepository
-from app.admin.repository import AdminUserRepository
 from app.user.repository import UserRepository
 from core.database.db import async_session
 from core.services.uow import AbstractUnitOfWork

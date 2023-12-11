@@ -12,10 +12,10 @@ class TestSignInUp:
     url_name_request_sms = "user:request_sms"
 
     user_data = TelegramUser(
-        id=339212312,
-        first_name="Test",
-        last_name="Testov",
-        username="testtestov",
+        id=3392122312,
+        first_name="Test23",
+        last_name="Testov4",
+        username="testtestov1",
         language_code="en",
         added_to_attachment_menu=True,
     )

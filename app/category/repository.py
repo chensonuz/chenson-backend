@@ -23,6 +23,11 @@ class CategoryRepository(SQLAlchemyRepository):
     ) -> model | None:
         return await super().find_one_or_none_by(column, value, options=[])
 
+    async def find_one_or_none_by_title(
+        self, value, **kwargs
+    ) -> model | None:
+        return await super().find_one_or_none_by(self.model.title, value, options=[])
+
     async def find_all(self, **kwargs) -> list[model]:
         return await super().find_all(**kwargs)
 

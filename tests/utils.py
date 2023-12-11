@@ -5,10 +5,16 @@ import random
 import string
 import urllib.parse
 from datetime import datetime
-from typing import Tuple
+from typing import Annotated, Tuple
 
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+
+from app.uow import UnitOfWork
 from app.user.schemas import TelegramUser
 from core.config import _Config
+from core.services.uow import AbstractUnitOfWork
 
 TestConfig = _Config()
 
@@ -59,3 +65,23 @@ def generate_init_data(
     fake_data["hash"] = data_signature
     fake_encoded_data = urllib.parse.urlencode(fake_data)
     return tg_user, base64.b64encode(fake_encoded_data.encode()).decode()
+
+
+test_engine = create_async_engine(
+    TestConfig.SQLALCHEMY_TEST_DATABASE_URI.unicode_string(),
+    echo=False,  # TestConfig.SQLALCHEMY_DEBUG,
+    future=True,
+)
+
+test_async_session = sessionmaker(
+    test_engine, expire_on_commit=False, class_=AsyncSession
+)
+
+
+class TestUnitOfWork(UnitOfWork):
+    def __init__(self):
+        super().__init__()
+        self.session_factory = test_async_session
+
+
+TestUnitOfWorkDep = Annotated[AbstractUnitOfWork, Depends(TestUnitOfWork)]
