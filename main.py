@@ -1,6 +1,7 @@
 import uvicorn
 from aiogram import Dispatcher
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.bot.dependencies import get_bot_instance
 from core.config import AppConfig, get_swagger_config
@@ -34,7 +35,7 @@ def create_app() -> FastAPI:
     add_bot_handlers(bot_dispatcher)
 
     # Static Files
-    # app.mount("/media", StaticFiles(directory="media"), name="media")
+    app.mount("/media", StaticFiles(directory="media"), name="media")
 
     # Routers
     add_app_routers(app)
