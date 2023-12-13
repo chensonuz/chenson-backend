@@ -3,6 +3,7 @@ from aiogram import Bot
 from app.bot.dependencies import get_bot_instance
 from app.user.models import User
 from app.user.schemas import UserResponse, UserCreate
+from core.config import STATIC_FOLDER_PATH
 from core.services.uow import AbstractUnitOfWork
 
 
@@ -73,6 +74,6 @@ class UserService:
         result = await bot.get_user_profile_photos(id, limit=1)
         if result.total_count < 1:
             return None
-        fp = f"media/profile_photos/{id}.jpeg"
+        fp = f"{STATIC_FOLDER_PATH}/profile_photos/{id}.jpeg"
         await bot.download(result.photos[0][-1].file_id, fp)
         return fp

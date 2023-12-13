@@ -68,6 +68,8 @@ CONFIG_SWAGGER_FALSE = {
 }
 
 AppConfig = _Config()
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_FOLDER_PATH = os.path.join(ROOT_DIR, "static")
 
 
 def get_swagger_config() -> dict:
