@@ -72,6 +72,7 @@ class UserCreate(BaseSchema):
     phone_number: str = get_random_phone_number()
     password: str = get_random_password()
     username: str | None = None
+    photo_url: str | None = None
 
 
 class UserResponse(BaseORMSchema, UserBaseIDSchema, UserBase):

@@ -22,3 +22,4 @@ class User(Base, CreatedUpdatedMixin):
     password: Mapped[str]
     username: Mapped[str | None]
     phone_number: Mapped[str | None]
+    photo_url: Mapped[str | None]

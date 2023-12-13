@@ -1,3 +1,6 @@
+from aiogram import Bot
+
+from app.bot.dependencies import get_bot_instance
 from app.user.models import User
 from app.user.schemas import UserResponse, UserCreate
 from core.services.uow import AbstractUnitOfWork
@@ -50,5 +53,26 @@ class UserService:
         :return: user id
         """
         async with uow:
+            user.photo_url = await UserService.get_user_profile_photos(
+                get_bot_instance(), user.telegram_id
+            )
             user_id = await uow.user.add_one(user.model_dump(exclude_none=True))
             return user_id
+
+    @staticmethod
+    async def get_user_profile_photos(bot: Bot, id: int) -> str | None:
+        """
+        Get user profile photos
+
+        This method is used to get user profile photos
+
+        :param bot:
+        :param id: user id
+        :return: user profile photos
+        """
+        result = await bot.get_user_profile_photos(id, limit=1)
+        if result.total_count < 1:
+            return None
+        fp = f"media/profile_photos/{id}.jpeg"
+        await bot.download(result.photos[0][-1].file_id, fp)
+        return fp
