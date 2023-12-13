@@ -4,20 +4,14 @@ from aiogram.types import (
     InlineKeyboardButton,
     WebAppInfo,
 )
-from loguru import logger
 
 from app.bot.dependencies import get_bot_instance
-from app.user.service import UserService
 from core.config import AppConfig
 
 bot = get_bot_instance()
 
 
 async def start_handler(message: Message):
-    photo_url = await UserService.get_user_profile_photos(
-        bot, message.from_user.id
-    )
-    logger.warning(photo_url)
     await bot.send_message(
         chat_id=message.from_user.id,
         text="_Welcome!_",
