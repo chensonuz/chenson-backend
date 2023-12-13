@@ -24,6 +24,7 @@ class _Config(BaseSettings):
 
     BOT_WEBHOOK_URL: str
     BOT_WEB_APP_HOST: str
+    BOT_WEB_APP_DEV_HOST: str
     BOT_TOKEN: str
     BOT_TEST_ENVIRONMENT: bool
     TEST_BOT_TOKEN: str
