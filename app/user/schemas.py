@@ -57,6 +57,7 @@ class UserBase(BaseModel):
     role: UserRole | None = None
     email: str | None = None
     username: str | None = None
+    photo_url: str | None = None
 
 
 class UserBaseSchema(
