@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
+from app.category.schemas import CategoryResponse
 from core.schemas.base import BaseORMSchema, APIResponse
 
 
@@ -23,7 +24,7 @@ class ProductBaseCategoryIDSchema(BaseModel):
 class ProductResponse(
     BaseORMSchema, ProductBaseIDSchema, ProductBaseCategoryIDSchema, ProductBase
 ):
-    pass
+    category: Optional[CategoryResponse] = None
 
 
 class APIProductListResponse(APIResponse):

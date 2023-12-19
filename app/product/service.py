@@ -1,5 +1,9 @@
 from typing import List
 
+from sqlalchemy.orm import joinedload
+
+from app.product.filters import ProductFilter
+from app.product.models import Product
 from app.product.schemas import ProductResponse
 from core.exceptions.classes import NotFoundError
 from core.services.uow import AbstractUnitOfWork
@@ -18,11 +22,11 @@ class ProductService:
     """
 
     @staticmethod
-    async def get_products(
+    async def get_products_for_category(
         uow: AbstractUnitOfWork, category_id: int
     ) -> List[ProductResponse]:
         """
-        Get products
+        Get products for specific category
 
         This method is used to get products from the database by category id. If
         category doesn't exist, empty list is returned.
@@ -33,6 +37,28 @@ class ProductService:
         """
         async with uow:
             products = await uow.product.find_all_by_category_id(category_id)
+            return [
+                ProductResponse.model_validate(product) for product in products
+            ]
+
+    @staticmethod
+    async def get_products(
+        uow: AbstractUnitOfWork, filter_: ProductFilter | None = None
+    ) -> List[ProductResponse]:
+        """
+        Get products
+
+        This method is used to get products from the database. If
+        products don't exist, empty list is returned.
+
+        :param filter_: filter instance
+        :param uow: unit of work instance
+        :return: product view model
+        """
+        async with uow:
+            products = await uow.product.find_all(
+                filter=filter_, options=[joinedload(Product.category)]
+            )
             return [
                 ProductResponse.model_validate(product) for product in products
             ]

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 
 from app.dependencies import auth_service, UnitOfWorkDep
+from app.product.filters import ProductFilter
 from app.product.schemas import (
     APIProductResponse,
     APIProductListResponse,
@@ -17,7 +19,23 @@ async def get_products_by_category_id(
     return APIProductListResponse(
         success=True,
         message="Products by category retrieved.",
-        data=await ProductService.get_products(uow, category_id),
+        data=await ProductService.get_products_for_category(uow, category_id),
+    )
+
+
+@router.get(
+    "/all",
+    response_model=APIProductListResponse,
+    response_model_exclude_unset=True,
+)
+async def get_products(
+    uow: UnitOfWorkDep,
+    product_filter: ProductFilter = FilterDepends(ProductFilter),
+) -> APIProductListResponse:
+    return APIProductListResponse(
+        success=True,
+        message="Products retrieved.",
+        data=await ProductService.get_products(uow, filter_=product_filter),
     )
 
 

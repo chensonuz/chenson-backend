@@ -1,4 +1,5 @@
 from aiogram import Bot
+from aiogram.exceptions import TelegramBadRequest
 
 from app.bot.dependencies import get_bot_instance
 from app.user.models import User
@@ -71,9 +72,14 @@ class UserService:
         :param id: user id
         :return: user profile photos
         """
-        result = await bot.get_user_profile_photos(id, limit=1)
+        try:
+            result = await bot.get_user_profile_photos(id, limit=1)
+        except TelegramBadRequest:
+            return None
+
         if result.total_count < 1:
             return None
+
         fp = f"{MEDIA_DIR}/profile_photos/{id}.jpeg"
         await bot.download(result.photos[0][-1].file_id, fp)
         return fp

@@ -71,6 +71,9 @@ class SQLAlchemyRepository(AbstractRepository):
         if "options" in kwargs:
             for option in kwargs["options"]:
                 stmt = stmt.options(option)
+        if "filter" in kwargs:
+            stmt = kwargs["filter"].filter(stmt)
+            stmt = kwargs["filter"].sort(stmt)
         res = await self.session.execute(stmt)
         return [row[0] for row in res.all()]
 

@@ -8,7 +8,6 @@ from core.schemas.base import BaseORMSchema, APIResponse
 class CategoryBase(BaseModel):
     title: str
     status: bool | None = True
-    parent_id: int | None = None
 
 
 class CategoryBaseIDSchema(BaseModel):
