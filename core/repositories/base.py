@@ -56,6 +56,16 @@ class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def add_many(self, data: list[dict]) -> list[str | int]:
+        stmt = insert(self.model).returning(self.model.id)
+        try:
+            res = await self.session.execute(stmt, data)
+            await self.session.commit()
+            return list(map(int, res.scalars().all()))
+        except SQLAlchemyError as e:
+            await self.session.rollback()
+            raise ConflictError(str(e)) from e
+
     async def add_one(self, data: dict) -> str | int:
         stmt = insert(self.model).values(**data).returning(self.model.id)
         try:
@@ -75,7 +85,7 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = kwargs["filter"].filter(stmt)
             stmt = kwargs["filter"].sort(stmt)
         res = await self.session.execute(stmt)
-        return [row[0] for row in res.all()]
+        return [row[0] for row in res.unique().all()]
 
     async def find_all_by(self, column: Column, value, **kwargs) -> list[model]:
         stmt = select(self.model).where(column == value)
@@ -147,6 +157,20 @@ class SQLAlchemyRepository(AbstractRepository):
             res = await self.session.execute(stmt)
             await self.session.commit()
             return res.scalar_one_or_none()
+        except SQLAlchemyError as e:
+            await self.session.rollback()
+            raise ConflictError(str(e)) from e
+
+    async def delete_many(self, ids: list[str | int]):
+        stmt = (
+            delete(self.model)
+            .where(self.model.id.in_(ids))
+            .returning(self.model.id)
+        )
+        try:
+            res = await self.session.execute(stmt)
+            await self.session.commit()
+            return list(map(int, res.scalars().all()))
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise ConflictError(str(e)) from e

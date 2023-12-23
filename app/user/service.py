@@ -40,6 +40,13 @@ class UserService:
                 telegram_id
             )
             if user:
+                profile_photo = await UserService.get_user_profile_photos(
+                    get_bot_instance(), user.telegram_id
+                )
+                if user.photo_url != profile_photo:
+                    await uow.user.update_one(
+                        user.id, {"photo_url": profile_photo}
+                    )
                 return UserResponse.model_validate(user)
 
     @staticmethod

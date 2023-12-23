@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from loguru import logger
 
 from app.dependencies import auth_service, UnitOfWorkDep, get_current_user
 from app.user import mapper
@@ -34,14 +33,12 @@ async def user_auth(
     """
     user = await UserService.get_user(uow, auth.init_data.user.id)
     created = False
-    logger.info(f"1, {auth.init_data.user.id}, {created}")
     if not user:
         await UserService.register_user(
             uow, mapper.auth_data_to_create_schema(auth.init_data)
         )
         created = True
         user = await UserService.get_user(uow, auth.init_data.user.id)
-        logger.info(f"2, {auth.init_data.user.id}, {created}")
 
     return APISignInUpResponse(
         success=True,

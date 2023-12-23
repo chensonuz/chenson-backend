@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from app.category.repository import CategoryRepository
-from app.product.repository import ProductRepository
 from app.admin.repository import AdminUserRepository
+from app.category.repository import CategoryRepository
+from app.product.repository import ProductRepository, ProductImageRepository
 from app.user.repository import UserRepository
 
 
@@ -11,6 +11,7 @@ class AbstractUnitOfWork(ABC):
     user: UserRepository
     category: CategoryRepository
     product: ProductRepository
+    product_image: ProductImageRepository
 
     @abstractmethod
     def __init__(self, *args):

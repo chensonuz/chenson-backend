@@ -2,6 +2,7 @@ import traceback
 
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from loguru import logger
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -11,14 +12,46 @@ from core.schemas.base import APIResponse
 
 
 def add_exception_handlers(app: FastAPI):
+    @app.exception_handler(RequestValidationError)
+    async def custom_form_validation_error(
+        request: Request, exc: RequestValidationError
+    ):
+        pydantic_error = exc.errors()[0]
+        msg = f"'{pydantic_error['loc'][1]}' -> {pydantic_error['msg']}"
+        if (
+            "image" in pydantic_error["input"]
+            and ";base64," in pydantic_error["input"]["image"]
+        ):
+            if len(pydantic_error["input"]["image"]) > 1048:
+                pydantic_error["input"]["image"] = (
+                    pydantic_error["input"]["image"][:50] + " ..."
+                )
+        err_msg = APIResponse(
+            success=False, message=msg, data={"input": pydantic_error["input"]}
+        )
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=jsonable_encoder(err_msg),
+        )
+
     @app.exception_handler(ex.UnprocessableEntityError)
     async def unprocessable_exception_handler(
         request: Request, exc: ex.UnprocessableEntityError
     ):
+        logger.info(exc.response)
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content=jsonable_encoder(exc.response),
         )
+
+    # @app.exception_handler(ValidationError)
+    # async def pydantic_validation_error_handler(
+    #     request: Request, exc: ValidationError
+    # ):
+    #     return JSONResponse(
+    #         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+    #         content=jsonable_encoder(exc.detail),
+    #     )
 
     @app.exception_handler(ex.APIException)
     async def api_exception_handler(request: Request, exc: ex.APIException):

@@ -70,6 +70,7 @@ CONFIG_SWAGGER_FALSE = {
 
 AppConfig = _Config()
 MEDIA_DIR = "media"
+PRODUCT_IMAGES_DIR = f"{MEDIA_DIR}/products"
 
 
 def get_swagger_config() -> dict:

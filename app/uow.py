@@ -1,6 +1,6 @@
 from app.admin.repository import AdminUserRepository
 from app.category.repository import CategoryRepository
-from app.product.repository import ProductRepository
+from app.product.repository import ProductRepository, ProductImageRepository
 from app.user.repository import UserRepository
 from core.database.db import async_session
 from core.services.uow import AbstractUnitOfWork
@@ -21,6 +21,9 @@ class UnitOfWork(AbstractUnitOfWork):
         self.user: UserRepository = UserRepository(self.session)
         self.category: CategoryRepository = CategoryRepository(self.session)
         self.product: ProductRepository = ProductRepository(self.session)
+        self.product_image: ProductImageRepository = ProductImageRepository(
+            self.session
+        )
 
     async def __aexit__(self, *args):
         await self.rollback()
