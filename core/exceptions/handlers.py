@@ -44,15 +44,6 @@ def add_exception_handlers(app: FastAPI):
             content=jsonable_encoder(exc.response),
         )
 
-    # @app.exception_handler(ValidationError)
-    # async def pydantic_validation_error_handler(
-    #     request: Request, exc: ValidationError
-    # ):
-    #     return JSONResponse(
-    #         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-    #         content=jsonable_encoder(exc.detail),
-    #     )
-
     @app.exception_handler(ex.APIException)
     async def api_exception_handler(request: Request, exc: ex.APIException):
         return JSONResponse(

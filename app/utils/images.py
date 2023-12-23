@@ -1,4 +1,3 @@
-import asyncio
 import base64
 import io
 import os
@@ -6,6 +5,7 @@ from datetime import datetime
 from random import randint
 
 from PIL import Image
+from loguru import logger
 
 from core.config import MEDIA_DIR, PRODUCT_IMAGES_DIR
 from core.exceptions.classes import ValuePydanticError
@@ -48,10 +48,14 @@ def save_image(image: str | None, fp: str) -> str | None:
     if not os.path.exists(parent_folder):
         os.makedirs(parent_folder)
 
-    decoded_image, format_image = decoder_image(image)
-    fp = f"{fp}{format_image}".replace("//", "/")
-    decoded_image.save(fp)
-    return fp
+    try:
+        decoded_image, format_image = decoder_image(image)
+        fp = f"{fp}{format_image}".replace("//", "/")
+        decoded_image.save(fp)
+        return fp
+    except Exception as e:
+        logger.info(e)
+        return None
 
 
 def delete_file(path: str):
@@ -76,20 +80,16 @@ def filter_product_images(images: list[str]) -> (list[str], list[str]):
     return existing, to_be_created
 
 
-async def create_product_images(
-    images: list[str], product_id: int
-) -> list[dict]:
+def create_product_images(images: list[str], product_id: int) -> list[dict]:
     if not images:
         return []
-    images_fps = await asyncio.gather(
-        *[
-            async_save_image(
-                image,
-                f"{PRODUCT_IMAGES_DIR}/{get_random_filename()}_{product_id}.",
-            )
-            for image in images[:3]
-        ]
-    )
+    images_fps = [
+        save_image(
+            image,
+            f"{PRODUCT_IMAGES_DIR}/{get_random_filename()}_{product_id}.",
+        )
+        for image in images[:3]
+    ]
     return [
         {"product_id": product_id, "image": img_url} for img_url in images_fps
     ]

@@ -47,7 +47,7 @@ class AdminProductService:
             product_id = await uow.product.add_one(
                 data.model_dump(exclude={"images"})
             )
-            images_data = await create_product_images(data.images, product_id)
+            images_data = create_product_images(data.images, product_id)
             await uow.product_image.add_many(data=images_data)
             return product_id
 
@@ -68,7 +68,7 @@ class AdminProductService:
             current_product = await uow.product.find_one_or_none(id)
             if not current_product:
                 raise NotFoundError(message="Product not found")
-            images_to_create = await create_product_images(
+            images_to_create = create_product_images(
                 [image.image for image in data.images if image.to_be_created],
                 current_product.id,
             )
