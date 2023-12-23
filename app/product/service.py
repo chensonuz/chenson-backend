@@ -57,7 +57,11 @@ class ProductService:
         """
         async with uow:
             products = await uow.product.find_all(
-                filter=filter_, options=[joinedload(Product.category)]
+                filter=filter_,
+                options=[
+                    joinedload(Product.category),
+                    joinedload(Product.images),
+                ],
             )
             return [
                 ProductResponse.model_validate(product) for product in products
