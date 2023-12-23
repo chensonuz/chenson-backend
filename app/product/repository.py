@@ -1,7 +1,10 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 
 from app.product.models import Product, ProductImage
+from app.utils.images import delete_file
+from core.exceptions.classes import ConflictError
 from core.repositories.base import SQLAlchemyRepository
 
 
@@ -25,3 +28,21 @@ class ProductRepository(SQLAlchemyRepository):
 
 class ProductImageRepository(SQLAlchemyRepository):
     model = ProductImage
+
+    async def delete_many(self, ids: list[int | str]) -> None:
+        stmt = (
+            delete(self.model)
+            .where(self.model.id.in_(ids))
+            .returning(self.model.image)
+        )
+        try:
+            res = await self.session.execute(stmt)
+            await self.session.commit()
+            image_paths = res.scalars().all()
+        except SQLAlchemyError as e:
+            await self.session.rollback()
+            raise ConflictError(str(e)) from e
+
+        for image_path in image_paths:
+            delete_file(image_path)
+        return
