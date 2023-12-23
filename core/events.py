@@ -14,7 +14,7 @@ def add_events(app: FastAPI, **kwargs):
         bot: Bot = kwargs.get("bot")
         bot_dispatcher: Dispatcher = kwargs.get("bot_dispatcher")
         if bot and bot_dispatcher and AppConfig.RUN_BOT_POLLING:
-            asyncio.create_task(bot_dispatcher.start_polling(bot))
+            await asyncio.create_task(bot_dispatcher.start_polling(bot))
         # create db tables
         await init_models()
 

@@ -20,7 +20,8 @@ async def init_models():
         try:
             if await uow.admin_user.find_all():
                 return
-            await create_fixtures(uow)
+            # await create_fixtures(uow)
+            await create_admin(uow)
         except:
             async with engine.begin() as conn:
                 await conn.run_sync(Base.metadata.drop_all)
@@ -28,11 +29,11 @@ async def init_models():
 
     async with uow:
         if not await uow.admin_user.find_all():
-            await create_fixtures(uow)
+            await create_admin(uow)
+    #         await create_fixtures(uow)
 
 
-async def create_fixtures(uow: UnitOfWorkDep):
-    fake = Faker()
+async def create_admin(uow: UnitOfWorkDep):
     async with uow:
         admin_user = AdminUserBaseWithPassword(
             email=AppConfig.FIRST_SUPERUSER,
@@ -44,6 +45,11 @@ async def create_fixtures(uow: UnitOfWorkDep):
                 admin_user.model_dump(exclude_none=True)
             )
             await uow.commit()
+
+
+async def create_fixtures(uow: UnitOfWorkDep):
+    fake = Faker()
+
     async with uow:
         for _ in range(5):
             cat_obj = AdminCategoryCreateRequest(
