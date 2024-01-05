@@ -65,3 +65,4 @@ class OrderCreateRequest(BaseModel):
 
 class OrderCreateDB(OrderBase):
     user_id: int
+    payment_method: PaymentMethod

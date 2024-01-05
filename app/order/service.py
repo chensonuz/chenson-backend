@@ -53,6 +53,7 @@ class OrderService:
                     address_info_id=address_info_id,
                     amount=sum(order_item_prices),
                     status=data.status,
+                    payment_method=data.payment_method,
                 ).model_dump()
             )
 
