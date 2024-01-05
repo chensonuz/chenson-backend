@@ -17,9 +17,15 @@ def add_exception_handlers(app: FastAPI):
         request: Request, exc: RequestValidationError
     ):
         pydantic_error = exc.errors()[0]
-        msg = f"'{pydantic_error['loc'][1]}' -> {pydantic_error['msg']}"
+        loc, msg = pydantic_error["loc"], pydantic_error["msg"]
+        filtered_loc = loc[1:] if loc[0] in ("body", "query", "path") else loc
+        field_name = (
+            f"{'.'.join(map(str, filtered_loc))} -> " if filtered_loc else ""
+        )
+        formatted_msg = field_name + msg
         if (
-            "image" in pydantic_error["input"]
+            pydantic_error["input"]
+            and "image" in pydantic_error["input"]
             and ";base64," in pydantic_error["input"]["image"]
         ):
             if len(pydantic_error["input"]["image"]) > 1048:
@@ -27,7 +33,9 @@ def add_exception_handlers(app: FastAPI):
                     pydantic_error["input"]["image"][:50] + " ..."
                 )
         err_msg = APIResponse(
-            success=False, message=msg, data={"input": pydantic_error["input"]}
+            success=False,
+            message=formatted_msg,
+            data={"input": pydantic_error["input"]},
         )
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

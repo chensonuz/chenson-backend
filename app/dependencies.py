@@ -20,7 +20,8 @@ auth_service = AuthService(
 
 
 async def get_current_user(
-    uow: UnitOfWorkDep, auth: AuthService = Depends(auth_service)
+    uow: UnitOfWorkDep,
+    auth: AuthService = Depends(auth_service),
 ) -> UserResponse:
     user = await UserService.get_user(uow, auth.init_data.user.id)
     if not user:

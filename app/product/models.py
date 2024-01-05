@@ -17,7 +17,7 @@ class Product(Base, CreatedUpdatedMixin):
     status: Mapped[bool] = mapped_column(default=True)
     category: Mapped["Category"] = relationship(lazy="joined")
     images: Mapped[List["ProductImage"]] = relationship(
-        back_populates="product"
+        back_populates="product", lazy="joined"
     )
 
 

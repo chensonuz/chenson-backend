@@ -20,6 +20,14 @@ class ProductRepository(SQLAlchemyRepository):
         res = await self.session.execute(stmt)
         return res.unique().scalar_one_or_none()
 
+    async def find_all_in_ids(self, ids: list[int], **kwargs) -> list[model]:
+        stmt = select(self.model).where(self.model.id.in_(ids))
+        if "options" in kwargs:
+            for option in kwargs["options"]:
+                stmt = stmt.options(option)
+        res = await self.session.execute(stmt)
+        return res.scalars().all()
+
     async def find_all_by_category_id(self, value, **kwargs) -> list[model]:
         return await super().find_all_by(
             self.model.category_id, value, **kwargs

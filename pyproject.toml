@@ -25,6 +25,7 @@ stackprinter = "^0.2.11"
 bcrypt = "4.0.1"
 fastapi-filter = {extras = ["sqlalchemy"], version = "^1.0.0"}
 pillow = "^10.1.0"
+alembic = "^1.13.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"

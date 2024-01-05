@@ -93,7 +93,7 @@ class SQLAlchemyRepository(AbstractRepository):
             for option in kwargs["options"]:
                 stmt = stmt.options(option)
         res = await self.session.execute(stmt)
-        return [row[0] for row in res.all()]
+        return [row[0] for row in res.unique().all()]
 
     async def find_all_by_filter(
         self, filters: List[bool | None], **kwargs

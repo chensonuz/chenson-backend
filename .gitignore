@@ -184,3 +184,6 @@ env
 
 # VSCode
 .vscode
+**/*.png
+**/*.jpg
+**/*.jpeg

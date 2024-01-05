@@ -57,7 +57,7 @@ class AuthService:
 
         return InitData.model_validate(init_data_dict)
 
-    def __call__(self, request: Request):
+    async def __call__(self, request: Request):
         """
         Call method
 

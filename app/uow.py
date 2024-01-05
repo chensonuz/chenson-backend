@@ -1,7 +1,8 @@
 from app.admin.repository import AdminUserRepository
 from app.category.repository import CategoryRepository
+from app.order.repository import OrderRepository, OrderItemRepository
 from app.product.repository import ProductRepository, ProductImageRepository
-from app.user.repository import UserRepository
+from app.user.repository import UserRepository, AddressInfoRepository
 from core.database.db import async_session
 from core.services.uow import AbstractUnitOfWork
 
@@ -22,6 +23,11 @@ class UnitOfWork(AbstractUnitOfWork):
         self.category: CategoryRepository = CategoryRepository(self.session)
         self.product: ProductRepository = ProductRepository(self.session)
         self.product_image: ProductImageRepository = ProductImageRepository(
+            self.session
+        )
+        self.order: OrderRepository = OrderRepository(self.session)
+        self.order_item: OrderItemRepository = OrderItemRepository(self.session)
+        self.address_info: AddressInfoRepository = AddressInfoRepository(
             self.session
         )
 

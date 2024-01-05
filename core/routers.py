@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.admin.router import router as admin_router
 from app.category.admin.router import router as admin_categories_router
 from app.category.router import router as categories_router
+from app.order.router import router as orders_router
 from app.product.admin.router import router as admin_products_router
 from app.product.router import router as products_router
 from app.user.admin.router import router as admin_users_router
@@ -34,6 +35,12 @@ def add_app_routers(app: FastAPI):
         router=products_router,
         prefix=f"{AppConfig.PREFIX}/products",
         tags=["products"],
+    )
+
+    app.include_router(
+        router=orders_router,
+        prefix=f"{AppConfig.PREFIX}/orders",
+        tags=["orders"],
     )
 
     app.include_router(
