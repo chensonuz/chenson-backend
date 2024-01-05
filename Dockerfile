@@ -10,3 +10,4 @@ RUN pip install poetry
 RUN poetry config --local virtualenvs.in-project true
 RUN poetry install --with dev --no-interaction --no-root
 # RUN poetry run pytest tests
+RUN poetry alembic upgrade head
