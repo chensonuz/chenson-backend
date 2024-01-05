@@ -26,7 +26,7 @@ class ProductRepository(SQLAlchemyRepository):
             for option in kwargs["options"]:
                 stmt = stmt.options(option)
         res = await self.session.execute(stmt)
-        return res.scalars().all()
+        return res.unique().scalars().all()
 
     async def find_all_by_category_id(self, value, **kwargs) -> list[model]:
         return await super().find_all_by(
