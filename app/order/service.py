@@ -3,9 +3,9 @@ from typing import List
 
 from app.order.schemas import (
     OrderCreateRequest,
-    OrderResponse,
     OrderCreateDB,
     OrderItemCreateDB,
+    OrderShortResponse,
 )
 from app.uow import UnitOfWork
 from app.user.schemas import UserResponse
@@ -43,6 +43,10 @@ class OrderService:
                     continue
                 filtered_order_items.append(order_item)
                 order_item_prices.append(order_item.quantity * product.price)
+
+            if not filtered_order_items:
+                raise NotFoundError("No products found for order")
+
             address_info = data.address_info.model_dump()
             address_info["user_id"] = current_user.id
             address_info_id = await uow.address_info.add_one(address_info)
@@ -54,23 +58,26 @@ class OrderService:
                     amount=sum(order_item_prices),
                     status=data.status,
                     payment_method=data.payment_method,
+                ).model_dump(),
+                commit=False,
+            )
+            order_items = [
+                OrderItemCreateDB(
+                    order_id=order_id,
+                    product_id=item.product_id,
+                    quantity=item.quantity,
                 ).model_dump()
-            )
-
+                for item in filtered_order_items
+            ]
             await uow.order_item.add_many(
-                [
-                    OrderItemCreateDB(
-                        order_id=order_id,
-                        product_id=item.product_id,
-                        quantity=item.quantity,
-                    ).model_dump()
-                    for item in filtered_order_items
-                ]
+                order_items,
+                commit=False,
             )
+            await uow.commit()
             return order_id  # await OrderService.get_order(uow, order_id)
 
     @staticmethod
-    async def get_order(uow: UnitOfWork, order_id: int) -> OrderResponse:
+    async def get_order(uow: UnitOfWork, order_id: int) -> OrderShortResponse:
         """Get order method.
 
         :param uow: unit of work instance
@@ -90,10 +97,12 @@ class OrderService:
             #     client=client,
             #     items=order_items,
             # )
-            return OrderResponse.model_validate(order)
+            return OrderShortResponse.model_validate(order)
 
     @staticmethod
-    async def get_orders(uow: UnitOfWork, user_id: int) -> List[OrderResponse]:
+    async def get_orders(
+        uow: UnitOfWork, user_id: int
+    ) -> List[OrderShortResponse]:
         """Get orders method.
 
         :param user_id: user id
@@ -101,7 +110,5 @@ class OrderService:
         :return: list of order responses
         """
         async with uow:
-            return [
-                OrderResponse.model_validate(order)
-                for order in await uow.order.find_all_by_user_id(user_id)
-            ]
+            data = await uow.order.find_all_by_user_id(user_id)
+            return [OrderShortResponse.model_validate(order) for order in data]

@@ -1,12 +1,11 @@
-"""Order repository module."""
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload, subqueryload
+from sqlalchemy.orm import joinedload
 
-from app.order.models import Order, OrderItem
+from app.order.models import Order
 from core.repositories.base import SQLAlchemyRepository
 
 
-class OrderRepository(SQLAlchemyRepository):
+class AdminOrderRepository(SQLAlchemyRepository):
     model = Order
 
     async def find_one_or_none(self, id: str | int, **kwargs):
@@ -23,11 +22,8 @@ class OrderRepository(SQLAlchemyRepository):
             self.model.user_id,
             value,
             options=[
-                subqueryload(self.model.client),
-                subqueryload(self.model.items),
+                joinedload(self.model.client),
+                joinedload(self.model.address_info),
+                joinedload(self.model.items),
             ],
         )
-
-
-class OrderItemRepository(SQLAlchemyRepository):
-    model = OrderItem

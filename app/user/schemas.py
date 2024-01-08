@@ -47,7 +47,7 @@ class UserBasePasswordSchema(BaseModel):
     password: str | None = None
 
 
-class UserBaseIDSchema(BaseModel):
+class UserID(BaseModel):
     id: int
 
 
@@ -60,9 +60,7 @@ class UserBase(BaseModel):
     photo_url: str | None = None
 
 
-class UserBaseSchema(
-    BaseORMSchema, UserBaseIDSchema, UserBase, UserBasePasswordSchema
-):
+class UserBaseSchema(BaseORMSchema, UserID, UserBase, UserBasePasswordSchema):
     pass
 
 
@@ -76,8 +74,14 @@ class UserCreate(BaseSchema):
     photo_url: str | None = None
 
 
-class UserResponse(BaseORMSchema, UserBaseIDSchema, UserBase):
+class UserResponse(BaseORMSchema, UserID, UserBase):
     pass
+
+
+class UserShortResponse(BaseORMSchema, UserID):
+    first_name: str
+    telegram_id: int
+    phone_number: str | None = None
 
 
 class UserSignInUpResponse(BaseModel):

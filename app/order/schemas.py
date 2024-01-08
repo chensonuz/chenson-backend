@@ -4,9 +4,9 @@ from typing import List
 from pydantic import BaseModel
 
 from app.order.constants import OrderStatus, PaymentMethod
-from app.product.schemas import ProductResponse
-from app.user.schemas import UserResponse
-from core.schemas.base import BaseORMSchema
+from app.product.schemas import ProductResponse, OrderProductResponse
+from app.user.schemas import UserResponse, UserShortResponse
+from core.schemas.base import BaseORMSchema, APIResponse
 
 
 class OrderItemBase(BaseModel):
@@ -20,6 +20,10 @@ class OrderItemID(BaseModel):
 
 class OrderItemResponse(BaseORMSchema, OrderItemID, OrderItemBase):
     product: ProductResponse
+
+
+class OrderItemShortResponse(BaseORMSchema, OrderItemID, OrderItemBase):
+    product: OrderProductResponse
 
 
 class OrderItemCreateRequest(OrderItemBase):
@@ -47,6 +51,11 @@ class OrderResponse(BaseORMSchema, OrderID, OrderBase):
     items: List[OrderItemResponse]
 
 
+class OrderShortResponse(BaseORMSchema, OrderID, OrderBase):
+    client: UserShortResponse
+    items: List[OrderItemShortResponse]
+
+
 class AddressInfo(BaseModel):
     address: str
     location: str
@@ -66,3 +75,11 @@ class OrderCreateRequest(BaseModel):
 class OrderCreateDB(OrderBase):
     user_id: int
     payment_method: PaymentMethod
+
+
+class APIOrderResponse(APIResponse):
+    data: OrderShortResponse
+
+
+class APIOrderListResponse(APIResponse):
+    data: List[OrderShortResponse]

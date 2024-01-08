@@ -14,7 +14,3 @@ class AdminCategoryUpdateRequest(BaseModel):
 class AdminCategoryUpdatePartialRequest(BaseModel):
     title: str | None = None
     status: bool | None = None
-
-
-class AdminCategoryDeleteRequest(BaseModel):
-    id: int

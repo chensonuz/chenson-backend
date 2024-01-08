@@ -11,7 +11,7 @@ from core.schemas.base import BaseORMSchema, APIResponse
 class ProductBase(BaseModel):
     title: str
     description: str
-    price: int
+    price: float
     status: bool | None = False
 
 
@@ -46,6 +46,13 @@ class ProductResponse(
     ProductImagesSchema,
 ):
     category: Optional[CategoryResponse] = None
+
+
+class OrderProductResponse(
+    BaseORMSchema, ProductBaseIDSchema, ProductBaseCategoryIDSchema
+):
+    title: str
+    price: float
 
 
 class APIProductListResponse(APIResponse):

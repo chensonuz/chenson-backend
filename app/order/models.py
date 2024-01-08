@@ -18,12 +18,12 @@ class OrderItem(Base, CreatedUpdatedMixin):
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
     quantity: Mapped[int]
-    product: Mapped["Product"] = relationship("Product", lazy="selectin")
+    product: Mapped["Product"] = relationship("Product", lazy="joined")
 
 
 class Order(Base, CreatedUpdatedMixin):
     __tablename__ = "orders"
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     address_info_id: Mapped[int] = mapped_column(
         ForeignKey("addresses_info.id")
     )
@@ -32,6 +32,4 @@ class Order(Base, CreatedUpdatedMixin):
     status: Mapped[OrderStatus] = mapped_column(default=OrderStatus.ACCEPTED)
     client: Mapped["User"] = relationship("User")
     items: Mapped[List["OrderItem"]] = relationship("OrderItem")
-    address_info: Mapped["AddressInfo"] = relationship(
-        "AddressInfo", lazy="selectin"
-    )
+    address_info: Mapped["AddressInfo"] = relationship("AddressInfo")

@@ -56,21 +56,25 @@ class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def add_many(self, data: list[dict]) -> list[str | int]:
+    async def add_many(
+        self, data: list[dict], commit: bool = True
+    ) -> list[str | int]:
         stmt = insert(self.model).returning(self.model.id)
         try:
             res = await self.session.execute(stmt, data)
-            await self.session.commit()
+            if commit:
+                await self.session.commit()
             return list(map(int, res.scalars().all()))
         except SQLAlchemyError as e:
             await self.session.rollback()
             raise ConflictError(str(e)) from e
 
-    async def add_one(self, data: dict) -> str | int:
+    async def add_one(self, data: dict, commit: bool = True) -> str | int:
         stmt = insert(self.model).values(**data).returning(self.model.id)
         try:
             res = await self.session.execute(stmt)
-            await self.session.commit()
+            if commit:
+                await self.session.commit()
             return res.scalar_one()
         except SQLAlchemyError as e:
             await self.session.rollback()
