@@ -68,22 +68,27 @@ class AdminProductService:
             current_product = await uow.product.find_one_or_none(id)
             if not current_product:
                 raise NotFoundError(message="Product not found")
-            images_to_create = create_product_images(
-                [image.image for image in data.images if image.to_be_created],
-                current_product.id,
-            )
-            images_to_delete = [
-                image for image in data.images if image.to_be_deleted
-            ]
-            if images_to_delete:
-                await uow.product_image.delete_many(
-                    [image.id for image in images_to_delete]
+            if data.images:
+                images_to_create = create_product_images(
+                    [
+                        image.image
+                        for image in data.images
+                        if image.to_be_created
+                    ],
+                    current_product.id,
                 )
-                for image in images_to_delete:
-                    delete_file(image.image)
-            if images_to_create:
-                logger.info(images_to_create)
-                await uow.product_image.add_many(data=images_to_create)
+                images_to_delete = [
+                    image for image in data.images if image.to_be_deleted
+                ]
+                if images_to_delete:
+                    await uow.product_image.delete_many(
+                        [image.id for image in images_to_delete]
+                    )
+                    for image in images_to_delete:
+                        delete_file(image.image)
+                if images_to_create:
+                    logger.info(images_to_create)
+                    await uow.product_image.add_many(data=images_to_create)
             return await uow.product.update_one(
                 id, data.model_dump(exclude_unset=True, exclude={"images"})
             )

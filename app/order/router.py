@@ -1,7 +1,8 @@
 """Routers for order app."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 
+from app.bot.handlers import notify_order_to_admins
 from app.dependencies import auth_service, get_current_user, UnitOfWorkDep
 from app.order.schemas import (
     OrderCreateRequest,
@@ -19,10 +20,12 @@ router = APIRouter(dependencies=[Depends(auth_service)])
 async def checkout_order(
     uow: UnitOfWorkDep,
     data: OrderCreateRequest,
+    bg_task: BackgroundTasks,
     current_user: UserResponse = Depends(get_current_user),
 ) -> APIResponseWithID:
     """Checkout endpoint."""
     created_id = await OrderService.checkout_order(uow, data, current_user)
+    bg_task.add_task(notify_order_to_admins, uow, created_id)
     return APIResponseWithID(
         success=True,
         message="Order created successfully",

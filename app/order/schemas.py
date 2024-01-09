@@ -39,7 +39,14 @@ class OrderBase(BaseModel):
     user_id: int
     amount: int
     address_info_id: int
+    payment_method: PaymentMethod
     status: OrderStatus | None = OrderStatus.ACCEPTED
+
+    def display_status(self) -> str:
+        return OrderStatus(self.status).display_name()
+
+    def display_payment_method(self) -> str:
+        return PaymentMethod(self.payment_method).display_name()
 
 
 class OrderID(BaseModel):
@@ -63,6 +70,9 @@ class AddressInfo(BaseModel):
     comment: str | None = None
     entrance: str | None = None
     floor: str | None = None
+
+    def address_link(self) -> str:
+        return f"<a href='https://www.google.com/maps/search/?api=1&query={self.location}'>{self.address}</a>"
 
 
 class OrderCreateRequest(BaseModel):

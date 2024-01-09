@@ -46,6 +46,8 @@ class _Config(BaseSettings):
 
     COOKIE_SECURE: bool = False
 
+    MANAGERS_CHANNEL_ID: int
+
     @field_validator("ORIGINS")
     @classmethod
     def set_default_origins(cls, v: List[str]) -> List[str]:
