@@ -17,7 +17,7 @@ class OrderItem(Base, CreatedUpdatedMixin):
     __tablename__ = "order_items"
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), index=True)
     product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id"), index=True, ondelete="SET NULL"
+        ForeignKey("products.id", ondelete="SET NULL"), index=True
     )
     quantity: Mapped[int]
     product: Mapped["Product"] = relationship("Product", lazy="joined")
