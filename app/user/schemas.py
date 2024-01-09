@@ -85,10 +85,9 @@ class UserShortResponse(BaseORMSchema, UserID):
 
     def mention_html(self) -> str:
         """Mention the user in the best way possible given the available data."""
-        if self.username is not None:
-            return f"@{self.username}"
-        else:
-            return f"<a href='tg://user?id={self.telegram_id}'>{self.first_name}</a>"
+        return (
+            f"<a href='tg://user?id={self.telegram_id}'>{self.first_name}</a>"
+        )
 
 
 class UserSignInUpResponse(BaseModel):

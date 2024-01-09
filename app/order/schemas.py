@@ -37,7 +37,7 @@ class OrderItemCreateDB(OrderItemCreateRequest):
 
 class OrderBase(BaseModel):
     user_id: int
-    amount: int
+    amount: float
     address_info_id: int
     payment_method: PaymentMethod
     status: OrderStatus | None = OrderStatus.ACCEPTED
@@ -63,7 +63,7 @@ class OrderShortResponse(BaseORMSchema, OrderID, OrderBase):
     items: List[OrderItemShortResponse]
 
 
-class AddressInfo(BaseModel):
+class AddressInfo(BaseORMSchema):
     address: str
     location: str
     apartment: str | None = None

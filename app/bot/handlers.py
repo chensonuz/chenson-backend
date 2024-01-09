@@ -8,6 +8,7 @@ from loguru import logger
 
 from app.bot.dependencies import get_bot_instance
 from app.dependencies import UnitOfWorkDep
+from app.order.schemas import AddressInfo
 from app.order.service import OrderService
 from core.config import AppConfig
 
@@ -42,21 +43,24 @@ async def notify_order_to_admins(uow: UnitOfWorkDep, order_id: int):
     try:
         async with uow:
             order = await OrderService.get_order(uow, order_id)
+            address_info = AddressInfo.model_validate(
+                await uow.address_info.find_one(order.address_info_id)
+            )
             message = f"Новый заказ №{order.id}\n"
             message += f"Пользователь: {order.client.mention_html()}\n"
-            message += f"Адрес: {order.address_info.address_link()}\n"
+            message += f"Адрес: {address_info.address_link()}\n"
             message += f"Сумма: {order.amount} сум\n"
             message += f"Статус: {order.display_status()}\n"
             message += f"Способ оплаты: {order.display_payment_method()}\n"
             message += "Товары:\n"
             for item in order.items:
                 message += (
-                    f"  - {item.product.title} x {item.quantity} = "
-                    f"{round(item.product.price * item.quantity, 2)}\n"
+                    f"  - {item.product.title} ({item.product.price} сум) x {item.quantity} = "
+                    f"{round(item.product.price * item.quantity, 2)} сум\n"
                 )
 
         await bot.send_message(
-            chat_id=AppConfig.BOT_ADMIN_CHAT_ID,
+            chat_id=AppConfig.MANAGERS_CHANNEL_ID,
             text=message,
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(
