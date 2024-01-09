@@ -31,7 +31,9 @@ async def user_auth(
     :param auth: auth service
     :return: api response with user data
     """
-    user = await UserService.get_user(uow, auth.init_data.user.id)
+    user = await UserService.get_user(
+        uow, auth.init_data.user.id, with_photo_update=True
+    )
     created = False
     if not user:
         await UserService.register_user(

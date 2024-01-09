@@ -23,7 +23,9 @@ class UserService:
 
     @staticmethod
     async def get_user(
-        uow: AbstractUnitOfWork, telegram_id: int
+        uow: AbstractUnitOfWork,
+        telegram_id: int,
+        with_photo_update: bool = False,
     ) -> UserResponse | None:
         """
         Get user
@@ -31,6 +33,7 @@ class UserService:
         This method is used to get a user from the database by id. If user
         doesn't exist, None is returned.
 
+        :param with_photo_update: flag if profile pic should be updated
         :param uow: unit of work instance
         :param telegram_id: telegram id as integer
         :return: user view model
@@ -40,13 +43,14 @@ class UserService:
                 telegram_id
             )
             if user:
-                profile_photo = await UserService.get_user_profile_photos(
-                    get_bot_instance(), user.telegram_id
-                )
-                if user.photo_url != profile_photo:
-                    await uow.user.update_one(
-                        user.id, {"photo_url": profile_photo}
+                if with_photo_update:
+                    profile_photo = await UserService.get_user_profile_photos(
+                        get_bot_instance(), user.telegram_id
                     )
+                    if user.photo_url != profile_photo:
+                        await uow.user.update_one(
+                            user.id, {"photo_url": profile_photo}
+                        )
                 return UserResponse.model_validate(user)
 
     @staticmethod
