@@ -44,7 +44,9 @@ async def address_get(
     return APIAddressResponse(
         success=True,
         message="Address retrieved.",
-        data=await AddressService.get(uow=uow, id=address_id),
+        data=await AddressService.get(
+            uow=uow, id=address_id, user_id=current_user.id
+        ),
     )
 
 

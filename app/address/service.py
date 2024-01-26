@@ -55,10 +55,13 @@ class AddressService:
             return await uow.address_info.delete_one(id)
 
     @staticmethod
-    async def get(uow: AbstractUnitOfWork, id: int) -> AddressResponse:
+    async def get(
+        uow: AbstractUnitOfWork, id: int, user_id: int
+    ) -> AddressResponse:
         """
         Get address
 
+        :param user_id: current user id
         :param uow: unit of work instance
         :param id: address id
         :return: address
@@ -67,7 +70,7 @@ class AddressService:
             address: AddressInfo = await uow.address_info.find_one_or_none(
                 id=id
             )
-            if not address:
+            if not address or address.user_id != user_id:
                 raise NotFoundError(f"Address with id {id} not found")
             return AddressResponse.model_validate(address)
 
