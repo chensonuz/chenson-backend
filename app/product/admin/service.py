@@ -1,6 +1,5 @@
 from typing import List
 
-from loguru import logger
 from sqlalchemy.orm import joinedload
 
 from app.dependencies import UnitOfWorkDep
@@ -69,26 +68,22 @@ class AdminProductService:
             if not current_product:
                 raise NotFoundError(message="Product not found")
             if data.images:
-                images_to_create = create_product_images(
-                    [
-                        image.image
-                        for image in data.images
-                        if image.to_be_created
-                    ],
-                    current_product.id,
-                )
-                images_to_delete = [
-                    image for image in data.images if image.to_be_deleted
-                ]
-                if images_to_delete:
-                    await uow.product_image.delete_many(
-                        [image.id for image in images_to_delete]
+                if data.images.to_be_created:
+                    images_to_create = create_product_images(
+                        data.images.to_be_created,
+                        current_product.id,
                     )
-                    for image in images_to_delete:
-                        delete_file(image.image)
-                if images_to_create:
-                    logger.info(images_to_create)
                     await uow.product_image.add_many(data=images_to_create)
+                if data.images.to_be_deleted:
+                    await uow.product_image.delete_many(
+                        data.images.to_be_deleted
+                    )
+                    for image_id in data.images.to_be_deleted:
+                        image = await uow.product_image.find_one_or_none(
+                            image_id
+                        )
+                        if image:
+                            delete_file(image.image)
             return await uow.product.update_one(
                 id, data.model_dump(exclude_unset=True, exclude={"images"})
             )
