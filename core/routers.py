@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.address.router import router as addresses_router
 from app.admin.router import router as admin_router
 from app.category.admin.router import router as admin_categories_router
 from app.category.router import router as categories_router
@@ -24,6 +25,11 @@ def add_app_routers(app: FastAPI):
         router=users_router,
         prefix=f"{AppConfig.PREFIX}/users",
         tags=["users"],
+    )
+    app.include_router(
+        router=addresses_router,
+        prefix=f"{AppConfig.PREFIX}/users/address",
+        tags=["addresses"],
     )
 
     app.include_router(

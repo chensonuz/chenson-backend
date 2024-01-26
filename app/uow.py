@@ -2,7 +2,8 @@ from app.admin.repository import AdminUserRepository
 from app.category.repository import CategoryRepository
 from app.order.repository import OrderRepository, OrderItemRepository
 from app.product.repository import ProductRepository, ProductImageRepository
-from app.user.repository import UserRepository, AddressInfoRepository
+from app.user.repository import UserRepository
+from app.address.repository import AddressInfoRepository
 from core.database.db import async_session
 from core.services.uow import AbstractUnitOfWork
 

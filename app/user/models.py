@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import BigInteger, ForeignKey
+from sqlalchemy import BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database.db import Base
@@ -23,14 +23,3 @@ class User(Base, CreatedUpdatedMixin):
     username: Mapped[str | None]
     phone_number: Mapped[str | None]
     photo_url: Mapped[str | None]
-
-
-class AddressInfo(Base, CreatedUpdatedMixin):
-    __tablename__ = "addresses_info"
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    address: Mapped[str]
-    location: Mapped[str]
-    apartment: Mapped[str] = mapped_column(nullable=True)
-    comment: Mapped[str] = mapped_column(nullable=True)
-    entrance: Mapped[str] = mapped_column(nullable=True)
-    floor: Mapped[str] = mapped_column(nullable=True)

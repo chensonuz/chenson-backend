@@ -10,7 +10,8 @@ from core.database.mixins import CreatedUpdatedMixin
 
 if TYPE_CHECKING:
     from app.product.models import Product
-    from app.user.models import User, AddressInfo
+    from app.user.models import User
+    from app.address.models import AddressInfo
 
 
 class OrderItem(Base, CreatedUpdatedMixin):

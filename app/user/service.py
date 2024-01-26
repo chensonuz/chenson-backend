@@ -5,6 +5,7 @@ from app.bot.dependencies import get_bot_instance
 from app.user.models import User
 from app.user.schemas import UserResponse, UserCreate
 from core.config import MEDIA_DIR
+from core.exceptions.classes import NotFoundError
 from core.services.uow import AbstractUnitOfWork
 
 
@@ -52,6 +53,25 @@ class UserService:
                             user.id, {"photo_url": profile_photo}
                         )
                 return UserResponse.model_validate(user)
+
+    @staticmethod
+    async def get_user_by_id(uow: AbstractUnitOfWork, id: int) -> UserResponse:
+        """
+        Get user by id
+
+        This method is used to get a user from the database by id. If user
+        doesn't exist, raise NotFoundError.
+
+        :param with_photo_update: flag if profile pic should be updated
+        :param uow: unit of work instance
+        :param id: user id
+        :return: user view model
+        """
+        async with uow:
+            user: User = await uow.user.find_one_or_none(id)
+            if user:
+                raise NotFoundError("User not found")
+            return UserResponse.model_validate(user)
 
     @staticmethod
     async def register_user(uow: AbstractUnitOfWork, user: UserCreate) -> int:

@@ -1,4 +1,4 @@
-from app.user.models import User, AddressInfo
+from app.user.models import User
 from core.repositories.base import SQLAlchemyRepository
 
 
@@ -14,7 +14,3 @@ class UserRepository(SQLAlchemyRepository):
         return await super().find_one_or_none_by(
             self.model.telegram_id, value, options=[]
         )
-
-
-class AddressInfoRepository(SQLAlchemyRepository):
-    model = AddressInfo
