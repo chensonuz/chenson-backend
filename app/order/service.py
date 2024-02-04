@@ -47,14 +47,10 @@ class OrderService:
             if not filtered_order_items:
                 raise NotFoundError("No products found for order")
 
-            address_info = data.address_info.model_dump()
-            address_info["user_id"] = current_user.id
-            address_info_id = await uow.address_info.add_one(address_info)
-
             order_id = await uow.order.add_one(
                 OrderCreateDB(
                     user_id=current_user.id,
-                    address_info_id=address_info_id,
+                    address_info_id=data.address_info_id,
                     amount=sum(order_item_prices),
                     status=data.status,
                     payment_method=data.payment_method,
@@ -74,7 +70,7 @@ class OrderService:
                 commit=False,
             )
             await uow.commit()
-            return order_id  # await OrderService.get_order(uow, order_id)
+            return order_id
 
     @staticmethod
     async def get_order(uow: UnitOfWork, order_id: int) -> OrderShortResponse:
@@ -88,15 +84,6 @@ class OrderService:
             order = await uow.order.find_one_or_none(order_id)
             if not order:
                 raise NotFoundError("Order not found")
-            # order_items = [
-            #     OrderItemResponse.model_validate(item) for item in order.items
-            # ]
-            # client = UserResponse.model_validate(order.client)
-            # return OrderResponse(
-            #     **order.model_dump(exclude={"items", "client"}),
-            #     client=client,
-            #     items=order_items,
-            # )
             return OrderShortResponse.model_validate(order)
 
     @staticmethod

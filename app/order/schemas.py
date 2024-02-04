@@ -76,7 +76,7 @@ class AddressInfo(BaseORMSchema):
 
 
 class OrderCreateRequest(BaseModel):
-    address_info: AddressInfo
+    address_info_id: int
     payment_method: PaymentMethod
     status: OrderStatus | None = OrderStatus.ACCEPTED
     items: List[OrderItemCreateRequest]
