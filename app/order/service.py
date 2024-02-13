@@ -54,6 +54,8 @@ class OrderService:
                     amount=sum(order_item_prices),
                     status=data.status,
                     payment_method=data.payment_method,
+                    contact_number=data.contact_number
+                    or current_user.phone_number,
                 ).model_dump(),
                 commit=False,
             )

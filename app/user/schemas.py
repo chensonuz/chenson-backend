@@ -58,6 +58,7 @@ class UserBase(BaseModel):
     email: str | None = None
     username: str | None = None
     photo_url: str | None = None
+    phone_number: str | None = None
 
 
 class UserBaseSchema(BaseORMSchema, UserID, UserBase, UserBasePasswordSchema):

@@ -40,6 +40,7 @@ class OrderBase(BaseModel):
     amount: float
     address_info_id: int
     payment_method: PaymentMethod
+    contact_number: str | None = None
     status: OrderStatus | None = OrderStatus.ACCEPTED
 
     def display_status(self) -> str:
@@ -80,11 +81,11 @@ class OrderCreateRequest(BaseModel):
     payment_method: PaymentMethod
     status: OrderStatus | None = OrderStatus.ACCEPTED
     items: List[OrderItemCreateRequest]
+    contact_number: str | None = None
 
 
 class OrderCreateDB(OrderBase):
-    user_id: int
-    payment_method: PaymentMethod
+    ...
 
 
 class APIOrderResponse(APIResponse):

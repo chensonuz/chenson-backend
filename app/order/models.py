@@ -31,6 +31,7 @@ class Order(Base, CreatedUpdatedMixin):
         ForeignKey("addresses_info.id", ondelete="SET NULL")
     )
     amount: Mapped[int]
+    contact_number: Mapped[str] = mapped_column(nullable=True)
     payment_method: Mapped[PaymentMethod]
     status: Mapped[OrderStatus] = mapped_column(default=OrderStatus.ACCEPTED)
     client: Mapped["User"] = relationship("User")
